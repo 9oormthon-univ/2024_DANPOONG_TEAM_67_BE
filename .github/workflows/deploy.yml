@@ -26,8 +26,9 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Set up application.properties
+      - name: Set up application.yml
         run: |
+          mkdir ./src/main/resources
           touch ./src/main/resources/application.yml
           echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.yml
 
