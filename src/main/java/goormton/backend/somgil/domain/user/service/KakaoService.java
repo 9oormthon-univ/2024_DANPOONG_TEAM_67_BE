@@ -8,7 +8,7 @@ import goormton.backend.somgil.domain.user.domain.repository.UserRepository;
 import goormton.backend.somgil.domain.user.dto.response.LoginResponse;
 import goormton.backend.somgil.global.config.security.AuthTokens;
 import goormton.backend.somgil.global.config.security.jwt.domain.JwtTokenProvider;
-import goormton.backend.somgil.global.config.security.oauth.domain.AuthTokensGenerator;
+import goormton.backend.somgil.global.config.security.jwt.domain.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -16,10 +16,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 
 @Service
@@ -27,30 +29,51 @@ import java.util.HashMap;
 public class KakaoService {
 
     private final UserRepository userRepository;
-    private final AuthTokensGenerator authTokensGenerator;
-    private final JwtTokenProvider jwtTokenProvider;
+    //private final AuthTokensGenerator authTokensGenerator;
+    private final TokenProvider tokenProvider;
+    private final ClientKakao clientKakao;
 
-    @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
+    /*@Value("${spring.security.oauth2.client.registration.kakao.client-id}")
     private String clientId;
 
     @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
-    private String redirectUrl;
+    private String redirectUrl;*/
 
+    @Transactional
     public LoginResponse kakaoLogin(String code) {
 
-        // 1. "인가 코드"로 "액세스 토큰" 요청
-        String accessToken = getAccessToken(code, redirectUrl);
+        // 1. "인가 코드"로 "액세스 토큰" 요청 & 토큰으로 카카오 API 호출
+        User user = clientKakao.getUserData(clientKakao.getUserKakaoToken(code));
+        //2. 카카오ID로 회원가입 & 로그인 처리
+        if(!userRepository.existsByKakaoId(user.getKakaoId())){
+            userRepository.save(user);
+        }
+        User loginedUser = userRepository.findByKakaoId(user.getKakaoId()).get();
 
-        // 2. 토큰으로 카카오 API 호출
-        HashMap<String, Object> userInfo = getKakaoUserInfo(accessToken);
-
-        //3. 카카오ID로 회원가입 & 로그인 처리
-        LoginResponse kakaoUserResponse = kakaoUserLogin(userInfo);
-
-        return kakaoUserResponse;
+        String token = tokenProvider.createToken(loginedUser.getId().toString(),loginedUser.getRole(), LocalDateTime.now());
+        return new LoginResponse(loginedUser.getId(),loginedUser.getNickname(),loginedUser.getEmail(),token);
     }
 
-    private String getAccessToken(String code, String redirectUri) {
+    /*private LoginResponse kakaoUserLogin(HashMap<String, Object> userInfo){
+
+        Long uid= Long.valueOf(userInfo.get("id").toString());
+        String kakaoEmail = userInfo.get("email").toString();
+        String nickName = userInfo.get("nickname").toString();
+
+        User kakaoUser = userRepository.findByEmail(kakaoEmail).orElse(null);
+
+        if (kakaoUser == null) {    //회원가입
+            kakaoUser = User.builder()
+                    .nickname(nickName)
+                    .email(kakaoEmail).build();
+            userRepository.save(kakaoUser);
+        }
+        //토큰 생성
+        AuthTokens token = authTokensGenerator.generate(uid.toString());
+        return new LoginResponse(uid, nickName, kakaoEmail,token);
+    }*/
+
+    /*private String getAccessToken(String code, String redirectUri) {
 
         // HTTP Header 생성
         HttpHeaders headers = new HttpHeaders();
@@ -122,24 +145,7 @@ public class KakaoService {
         userInfo.put("nickname",nickname);
 
         return userInfo;
-    }
+    }*/
 
-    private LoginResponse kakaoUserLogin(HashMap<String, Object> userInfo){
 
-        Long uid= Long.valueOf(userInfo.get("id").toString());
-        String kakaoEmail = userInfo.get("email").toString();
-        String nickName = userInfo.get("nickname").toString();
-
-        User kakaoUser = userRepository.findByEmail(kakaoEmail).orElse(null);
-
-        if (kakaoUser == null) {    //회원가입
-            kakaoUser = User.builder()
-                    .nickname(nickName)
-                    .email(kakaoEmail).build();
-            userRepository.save(kakaoUser);
-        }
-        //토큰 생성
-        AuthTokens token = authTokensGenerator.generate(uid.toString());
-        return new LoginResponse(uid, nickName, kakaoEmail,token);
-    }
 }

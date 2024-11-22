@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
-@Component
+/*@Component
 @RequiredArgsConstructor
 public class AuthTokensGenerator {
     private static final String BEARER_TYPE = "Bearer";
@@ -28,4 +28,4 @@ public class AuthTokensGenerator {
 
         return AuthTokens.of(accessToken, refreshToken, BEARER_TYPE, ACCESS_TOKEN_EXPIRE_TIME / 1000L);
     }
-}
+}*/

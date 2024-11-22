@@ -14,19 +14,18 @@ import java.util.NoSuchElementException;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
-@Api(tags = {"유저 API"})
+//@Api(tags = {"유저 API"})
 public class UserController {
 
     private final KakaoService kakaoService;
 
-    @ResponseBody
     @GetMapping("/login/kakao")
-    @ApiOperatio(value = "웹 카카오 로그인", notes = "웹 프론트 버전 카카오 로그인")
+    //@ApiOperation(value = "웹 카카오 로그인", notes = "웹 프론트 버전 카카오 로그인")
     public ResponseEntity<LoginResponse> kakaoLogin(@RequestParam String code, HttpServletRequest request) {
         try {
             // 현재 도메인 확인
             String currentDomain = request.getServerName();
-            return ResponseEntity.ok(kakaoService.kakaoLogin(code, currentDomain));
+            return ResponseEntity.ok(kakaoService.kakaoLogin(code));
         } catch (NoSuchElementException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Item Not Found");
         }
