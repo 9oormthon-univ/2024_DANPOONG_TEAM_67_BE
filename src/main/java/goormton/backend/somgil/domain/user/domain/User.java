@@ -6,6 +6,7 @@ import lombok.*;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class User {
@@ -14,18 +15,16 @@ public class User {
     private Long id;
 
     @Column(nullable = false)
-    private String username;
+    private String email;
 
-    @JsonIgnore
-    @Column(nullable = false)
-    private String password;
+    private String nickname;
 
     private String role;
 
     @Builder
-    public User(String username, String password, String role) {
-        this.username = username;
-        this.password = password;
+    public User(String email, String nickname, String role) {
+        this.email = email;
+        this.nickname = nickname;
         this.role = role;
     }
 }
