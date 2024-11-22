@@ -27,6 +27,7 @@ public class Packages {
     private String description;
 
     private boolean isRecommended;
+    private boolean isCustomized;
 
     private LocalDateTime startDate;
     private LocalDateTime endDate;
@@ -61,10 +62,13 @@ public class Packages {
     }
 
     @Builder
-    public Packages(String name, String description, boolean isRecommended, List<Course> courses, List<Tag> tags) {
+    public Packages(String name, String description, boolean isRecommended, boolean isCustomized, LocalDateTime startDate, LocalDateTime endDate, List<Course> courses, List<Tag> tags) {
         this.name = name;
         this.description = description;
         this.isRecommended = isRecommended;
+        this.isCustomized = isCustomized;
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.courses = courses;
         this.tags = tags;
     }

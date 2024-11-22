@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -14,18 +15,25 @@ import java.util.List;
 @NoArgsConstructor
 public class PackageResponse {
 
+    private Long id;
     private String name;
     private String description;
-    private boolean isRecommended; // 추천 여부 필드 추가
+    private boolean isRecommended;
+    private boolean isCustomized;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
     private List<CourseResponse> courses;
     private List<String> tags;
     private DriverResponse driver;
 
     @Builder
-    public PackageResponse(String name, String description, boolean isRecommended, List<CourseResponse> courses, List<String> tags, DriverResponse driver) {
+    public PackageResponse(Long id, String name, String description, boolean isRecommended, LocalDateTime startDate, LocalDateTime endDate, List<CourseResponse> courses, List<String> tags, DriverResponse driver) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.isRecommended = isRecommended;
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.courses = courses;
         this.tags = tags;
         this.driver = driver;

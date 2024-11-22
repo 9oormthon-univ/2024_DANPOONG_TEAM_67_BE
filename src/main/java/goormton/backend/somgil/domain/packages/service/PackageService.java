@@ -20,6 +20,7 @@ public class PackageService {
     public List<PackageResponse> getAllPackages() {
         List<Packages> packages = packagesRepository.findAll();
         List<PackageResponse> packageList = packages.stream().map(pkg -> PackageResponse.builder()
+                .id(pkg.getId())
                 .name(pkg.getName())
                 .description(pkg.getDescription())
                 .isRecommended(pkg.isRecommended())
@@ -42,6 +43,7 @@ public class PackageService {
 
         List<Packages> recommendedPackages = packagesRepository.findByIsRecommendedTrue();
         List<PackageResponse> recommendedList = recommendedPackages.stream().map(pkg -> PackageResponse.builder()
+                .id(pkg.getId())
                 .name(pkg.getName())
                 .description(pkg.getDescription())
                 .isRecommended(pkg.isRecommended())
