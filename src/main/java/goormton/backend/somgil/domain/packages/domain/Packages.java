@@ -21,6 +21,8 @@ public class Packages {
     private String name;
     private String description;
 
+    private boolean isRecommended; // 추천 여부 필드 추가
+
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Course> courses;
 

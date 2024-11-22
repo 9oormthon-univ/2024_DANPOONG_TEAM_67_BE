@@ -16,4 +16,9 @@ public class PackageService {
     public List<Packages> getAllPackages() {
         return packageRepository.findAll();
     }
+
+    // 추천 패키지 조회
+    public List<Packages> getRecommendedPackages() {
+        return packageRepository.findByIsRecommendedTrue();
+    }
 }

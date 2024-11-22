@@ -27,6 +27,7 @@ public class PackageController {
         List<PackageResponse> packageList = packages.stream().map(pkg -> PackageResponse.builder()
                 .name(pkg.getName())
                 .description(pkg.getDescription())
+                .isRecommended(pkg.isRecommended())
                 .courses(pkg.getCourses().stream().map(course -> CourseResponse.builder()
                         .place(course.getPlace())
                         .description(course.getDescription())
@@ -41,4 +42,27 @@ public class PackageController {
 
         return ResponseEntity.ok(packageList); // 캐스팅 제거 및 리스트 반환
     }
+
+    // 추천 패키지만 반환
+    @GetMapping("/recommended")
+    public ResponseEntity<List<PackageResponse>> getRecommendedPackages() {
+        List<Packages> recommendedPackages = packageService.getRecommendedPackages();
+        List<PackageResponse> recommendedList = recommendedPackages.stream().map(pkg -> PackageResponse.builder()
+                .name(pkg.getName())
+                .description(pkg.getDescription())
+                .isRecommended(pkg.isRecommended())
+                .courses(pkg.getCourses().stream().map(course -> CourseResponse.builder()
+                        .place(course.getPlace())
+                        .description(course.getDescription())
+                        .region(course.getRegion())
+                        .start(course.getStart())
+                        .end(course.getEnd())
+                        .build()
+                ).collect(Collectors.toList()))
+                .tags(pkg.getTags().stream().map(Tag::getName).collect(Collectors.toList()))
+                .build()
+        ).collect(Collectors.toList());
+
+        return ResponseEntity.ok(recommendedList);
+
 }
