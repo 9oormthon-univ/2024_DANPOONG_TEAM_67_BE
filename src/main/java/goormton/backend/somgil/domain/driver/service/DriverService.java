@@ -12,8 +12,12 @@ import goormton.backend.somgil.domain.packages.domain.repository.PackagesReposit
 import goormton.backend.somgil.domain.packages.dto.request.CustomPackageRequest;
 import goormton.backend.somgil.domain.packages.dto.request.PackageRequest;
 import goormton.backend.somgil.domain.packages.dto.response.PackageResponse;
+import goormton.backend.somgil.domain.user.domain.User;
+import goormton.backend.somgil.domain.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,9 +34,13 @@ public class DriverService {
 
     private final PackagesRepository packagesRepository;
     private final DriverRepository driverRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     public List<PackageResponse> assignDriversToExistingPackages(List<PackageRequest> customPackageRequests) {
+
+        User loggedInUser = getCurrentUser();
+
         List<Packages> packagesToAssign = customPackageRequests.stream()
                 .map(this::convertToEntity)
                 .collect(Collectors.toList());
@@ -68,10 +76,17 @@ public class DriverService {
 
             selectedDriver.addPackage(pkg);
 //            driverRepository.save(selectedDriver);
+
+            // 유저에도 패키지, 운전자 정보를 저장
+            loggedInUser.addPackage(pkg);
+            loggedInUser.addDriver(selectedDriver);
         }
 
         // 패키지 저장
         List<Packages> savedPackages = packagesRepository.saveAll(packagesToAssign);
+
+        // 유저 정보 저장
+        userRepository.save(loggedInUser);
 
         // 응답 DTO로 변환
         return savedPackages.stream()
@@ -81,6 +96,8 @@ public class DriverService {
 
     @Transactional
     public PackageResponse assignDriverByLocal(CustomPackageRequest pkgRequest) {
+
+        User loggedInUser = getCurrentUser();
 
         // 커스텀 패키지 생성
         Packages customPackage = Packages.builder()
@@ -114,6 +131,11 @@ public class DriverService {
 
         // 패키지 저장
         packagesRepository.save(customPackage);
+
+        loggedInUser.addPackage(customPackage);
+        loggedInUser.addDriver(selectedDriver);
+
+        userRepository.save(loggedInUser);
 
         // 응답 DTO로 변환
         return convertToResponse(customPackage);
@@ -170,5 +192,15 @@ public class DriverService {
                         .contact(pkg.getDriver().getContact())
                         .build() : null)
                 .build();
+    }
+
+    private User getCurrentUser() {
+        // 현재 로그인된 사용자 가져오기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new IllegalStateException("현재 인증된 사용자가 없습니다.");
+        }
+
+        return  (User) authentication.getPrincipal();
     }
 }

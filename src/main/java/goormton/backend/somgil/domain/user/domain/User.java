@@ -61,7 +61,13 @@ public class User implements UserDetails {
         return id.toString();
     }
 
+    public void addPackage(Packages pkg) {
+        this.packages.add(pkg);
+        pkg.setUser(this); // 양방향 연관관계 설정
+    }
+
     public void addDriver(Driver driver) {
         this.drivers.add(driver);
+        driver.setUser(this);
     }
 }
