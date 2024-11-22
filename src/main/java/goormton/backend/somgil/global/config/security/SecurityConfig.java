@@ -1,5 +1,9 @@
 package goormton.backend.somgil.global.config.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import goormton.backend.somgil.global.config.security.jwt.domain.TokenProvider;
+import goormton.backend.somgil.global.config.security.jwt.errorHandler.CustomAccessDeniedHandler;
+import goormton.backend.somgil.global.config.security.jwt.errorHandler.CustomAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +15,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -19,6 +24,8 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity
 @EnableAutoConfiguration
 public class SecurityConfig {
+    private final TokenProvider tokenProvider;
+    private final ObjectMapper objectMapper;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -43,8 +50,10 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 );
 //        JWT Filter 추가
-//        http
-//                .addFilterBefore(jwtFilter, )
+        http
+                .addFilterBefore(new JwtAuthenticationFilter(tokenProvider,objectMapper), UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(exception->exception.accessDeniedHandler(new CustomAccessDeniedHandler(objectMapper))
+                        .authenticationEntryPoint(new CustomAuthenticationEntryPoint(objectMapper)));
         return http.build();
     }
 
