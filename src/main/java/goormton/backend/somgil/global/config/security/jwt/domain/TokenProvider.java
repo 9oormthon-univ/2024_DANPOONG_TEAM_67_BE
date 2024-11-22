@@ -26,7 +26,7 @@ import java.util.List;
 public class TokenProvider {
 
     private final UserDetailsService userDetailsService;
-    @Value("${jwtSecret}")
+    @Value("${app.auth.token-secret}")
     private String secret;
 
 

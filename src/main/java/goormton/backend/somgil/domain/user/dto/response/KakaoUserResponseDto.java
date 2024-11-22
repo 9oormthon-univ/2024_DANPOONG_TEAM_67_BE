@@ -1,8 +1,6 @@
 package goormton.backend.somgil.domain.user.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @NoArgsConstructor
@@ -16,6 +14,7 @@ public class KakaoUserResponseDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class KakaoAccount {
+        private String email;
         private Profile profile;
 
         @Getter
@@ -23,7 +22,6 @@ public class KakaoUserResponseDto {
         @AllArgsConstructor
         public static class Profile {
             private String nickname;
-            private String email;
         }
     }
 }

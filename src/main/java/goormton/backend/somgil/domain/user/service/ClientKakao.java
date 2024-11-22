@@ -42,7 +42,7 @@ public class ClientKakao {
         return User.builder()
                 .kakaoId(kakaoUserResponseDto.getId())
                 .nickname(kakaoUserResponseDto.getKakao_account().getProfile().getNickname())
-                .email(kakaoUserResponseDto.getKakao_account().getProfile().getEmail())
+                .email(kakaoUserResponseDto.getKakao_account().getEmail())
                 .build();
     }
 
@@ -56,7 +56,6 @@ public class ClientKakao {
 
 
         // Map을 application/x-www-form-urlencoded 형식의 문자열로 직렬화
-
         log.info("카카오 토큰 발급 요청 바디:{}",sb);
         KakaoTokenResponseDto kakaoTokenResponseDto = webclient.post()
                 .uri("https://kauth.kakao.com/oauth/token")
