@@ -1,7 +1,6 @@
 package goormton.backend.somgil.domain.packages.dto.response;
 
 import goormton.backend.somgil.domain.course.dto.BaseCourseResponse;
-import goormton.backend.somgil.domain.course.dto.DriveCourseResponse;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,7 +20,9 @@ public class PackageListResponse {
     private String description;
     private boolean isRecommended;
     private boolean isCustomized;
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss", timezone = "Asia/Seoul")
     private LocalTime startTime;
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss", timezone = "Asia/Seoul")
     private LocalTime endTime;
     private List<BaseCourseResponse> courses;
     private List<String> tags;
@@ -35,7 +36,11 @@ public class PackageListResponse {
         this.isRecommended = isRecommended;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.courses = courses;
-        this.tags = tags;
+        if (courses != null) {
+            this.courses.addAll(courses);
+        }
+        if (tags != null) {
+            this.tags.addAll(tags);
+        }
     }
 }

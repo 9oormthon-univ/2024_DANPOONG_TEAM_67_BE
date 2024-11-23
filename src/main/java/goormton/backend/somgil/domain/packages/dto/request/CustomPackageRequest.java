@@ -1,12 +1,9 @@
 package goormton.backend.somgil.domain.packages.dto.request;
 
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Builder
 @Getter
@@ -18,15 +15,9 @@ public class CustomPackageRequest {
     @NotNull
     private String region;
 
-    @Builder.Default
-    private List<LocalDate> selectedDates = new ArrayList<>(); // 사용자가 선택한 날짜 리스트
-//    private boolean isCustomized;
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+    private LocalDate startDate;
 
-    public void addSelectedDate(LocalDate selectedDate) {
-        this.selectedDates.add(selectedDate);
-    }
-
-    public void removeSelectedDate(LocalDate selectedDate) {
-        this.selectedDates.remove(selectedDate);
-    }
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+    private LocalDate endDate;
 }

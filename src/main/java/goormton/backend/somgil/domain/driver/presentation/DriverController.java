@@ -4,7 +4,6 @@ import goormton.backend.somgil.domain.driver.service.DriverService;
 import goormton.backend.somgil.domain.packages.dto.request.CustomPackageRequest;
 import goormton.backend.somgil.domain.packages.dto.request.PackageRequest;
 import goormton.backend.somgil.domain.packages.dto.response.PackageDetailResponse;
-import goormton.backend.somgil.domain.packages.dto.response.PackageListResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -27,8 +26,7 @@ public class DriverController {
 
     private final DriverService driverService;
 
-    @Operation(summary = "기존 패키지에 운전자 할당", description = "프론트엔드로부터 받은 기존 패키지 정보에 운전자를 할당합니다." +
-            " 사실 운전자가 패키지 시간대가 겹치면 반환되지 않아야 하는데 지금 코드로는 계속 테스트 과정에서 반환되어서 왜 그렇게 되는지 원인을 찾고 있습니다...")
+    @Operation(summary = "기존 패키지에 운전자 할당", description = "프론트엔드로부터 받은 기존 패키지 정보에 운전자를 할당합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "운전자 할당 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = PackageDetailResponse.class))}),
             @ApiResponse(responseCode = "400", description = "잘못된 요청", content = {@Content(mediaType = "application/json")}),
