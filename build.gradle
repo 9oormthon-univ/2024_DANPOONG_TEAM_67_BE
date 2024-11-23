@@ -85,3 +85,18 @@ tasks.named('asciidoctor') {
     inputs.dir snippetsDir
     dependsOn test
 }
+
+//Querydsl 설정부
+def generated = 'src/main/generated'
+
+tasks.withType(JavaCompile) {
+    options.generatedSourceOutputDirectory = file(generated)
+}
+
+sourceSets {
+    main.java.srcDirs += "$projectDir/build/generated"
+}
+
+clean {
+    delete file(generated)
+}

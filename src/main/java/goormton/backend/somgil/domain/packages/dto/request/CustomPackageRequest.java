@@ -1,6 +1,5 @@
 package goormton.backend.somgil.domain.packages.dto.request;
 
-import goormton.backend.somgil.domain.course.dto.request.CourseRequest;
 import lombok.*;
 
 import java.time.LocalDate;
