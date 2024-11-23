@@ -19,7 +19,8 @@ import goormton.backend.somgil.domain.packages.domain.repository.PackageDetailsR
 import goormton.backend.somgil.domain.packages.domain.repository.UserPackageRepository;
 import goormton.backend.somgil.domain.packages.dto.request.CustomPackageRequest;
 import goormton.backend.somgil.domain.packages.dto.request.PackageRequest;
-import goormton.backend.somgil.domain.packages.dto.response.PackageResponse;
+import goormton.backend.somgil.domain.packages.dto.response.PackageDetailResponse;
+import goormton.backend.somgil.domain.packages.dto.response.PackageListResponse;
 import goormton.backend.somgil.domain.user.domain.User;
 import goormton.backend.somgil.domain.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +51,7 @@ public class DriverService {
     private final TagRepository tagRepository;
 
     @Transactional
-    public List<PackageResponse> assignDriversToExistingPackages(PackageRequest packageRequest) {
+    public List<PackageDetailResponse> assignDriversToExistingPackages(PackageRequest packageRequest) {
         User loggedInUser = getCurrentUser();
 
         // UserPackage 생성 및 저장
@@ -98,7 +99,7 @@ public class DriverService {
     }
 
     @Transactional
-    public PackageResponse assignDriverByLocal(CustomPackageRequest pkgRequest) {
+    public PackageDetailResponse assignDriverByLocal(CustomPackageRequest pkgRequest) {
         User loggedInUser = getCurrentUser();
 
         // Custom PackageDetails 생성
@@ -202,7 +203,7 @@ public class DriverService {
                 .orElseThrow(() -> new IllegalArgumentException("BaseCourse를 찾을 수 없습니다: ID=" + id));
     }
 
-    private PackageResponse convertToResponse(UserPackage userPackage) {
+    private PackageDetailResponse convertToResponse(UserPackage userPackage) {
         // BaseCourse Responses
         List<BaseCourseResponse> courseResponses = userPackage.getCourseIds().stream()
                 .map(this::findUserCourseById)
@@ -239,7 +240,7 @@ public class DriverService {
         PackageDetails packageDetails = packageDetailsRepository.findById(userPackage.getPackageDetailsId())
                 .orElseThrow(() -> new IllegalArgumentException("PackageDetails를 찾을 수 없습니다: ID=" + userPackage.getPackageDetailsId()));
 
-        return PackageResponse.builder()
+        return PackageDetailResponse.builder()
                 .name(packageDetails.getName())
                 .description(packageDetails.getDescription())
                 .isRecommended(packageDetails.isRecommended())
