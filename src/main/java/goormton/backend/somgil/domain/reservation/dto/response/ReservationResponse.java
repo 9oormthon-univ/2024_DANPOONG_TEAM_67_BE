@@ -3,7 +3,6 @@ package goormton.backend.somgil.domain.reservation.dto.response;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @ToString
@@ -14,11 +13,14 @@ import java.util.List;
 public class ReservationResponse {
 
     private String packageName;
+    private String packageId;
     private String userName;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-//    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private String date;
+    private String startDate;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+    private String endDate;
 
     private List<String> selectedOptions; // 선택된 옵션의 내용
     private int adultCount;

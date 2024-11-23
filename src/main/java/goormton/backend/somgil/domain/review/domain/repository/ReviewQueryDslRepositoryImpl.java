@@ -13,7 +13,7 @@ public class ReviewQueryDslRepositoryImpl implements ReviewQueryDslRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<Review> findReviewsByPackageDetailsId(String packageId) {
+    public List<Review> findReviewsByPackagesId(String packageId) {
         QReview review = QReview.review;
         return queryFactory.selectFrom(review)
                 .where(review.packages.packageId.eq(packageId))

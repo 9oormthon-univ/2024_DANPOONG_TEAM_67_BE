@@ -6,8 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,6 +13,7 @@ import java.time.LocalDate;
 public class DriverReservationResponse {
 
     private String driverName;
+    private String packageId;
     private String contact;
     private String pickupLocation;
     private String dropOffLocation;
