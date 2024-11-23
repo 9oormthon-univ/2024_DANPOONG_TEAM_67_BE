@@ -1,6 +1,6 @@
 package goormton.backend.somgil.domain.review.domain;
 
-import goormton.backend.somgil.domain.packages.domain.PackageDetails;
+import goormton.backend.somgil.domain.packages.domain.Packages;
 import goormton.backend.somgil.domain.user.domain.User;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -25,8 +25,8 @@ public class Review {
     private User user; // 리뷰 작성자
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "package_id", nullable = false)
-    private PackageDetails packageDetails; // 리뷰 대상 패키지
+    @JoinColumn(name = "packages_id", nullable = false)
+    private Packages packages;
 
     private double rating; // 별점
     private String content; // 리뷰 내용
@@ -35,9 +35,9 @@ public class Review {
     private LocalDateTime updatedAt;
 
     @Builder
-    public Review(User user, PackageDetails packageDetails, double rating, String content) {
+    public Review(User user, Packages packages, double rating, String content) {
         this.user = user;
-        this.packageDetails = packageDetails;
+        this.packages = packages;
         this.rating = rating;
         this.content = content;
         this.createdAt = LocalDateTime.now();

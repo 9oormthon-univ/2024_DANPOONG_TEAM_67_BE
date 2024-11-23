@@ -4,7 +4,6 @@ import goormton.backend.somgil.domain.driver.domain.repository.DriverRepository;
 import goormton.backend.somgil.domain.driver.exception.NoAvailableDriverException;
 import goormton.backend.somgil.domain.packages.dto.request.CustomPackageRequest;
 import goormton.backend.somgil.domain.packages.dto.request.PackageRequest;
-import goormton.backend.somgil.domain.packages.dto.response.PackageDetailResponse;
 import goormton.backend.somgil.domain.user.domain.User;
 import goormton.backend.somgil.domain.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

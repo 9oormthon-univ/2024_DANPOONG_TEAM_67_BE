@@ -1,7 +1,6 @@
 package goormton.backend.somgil.domain.review.domain.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import goormton.backend.somgil.domain.packages.domain.QPackageDetails;
 import goormton.backend.somgil.domain.review.domain.QReview;
 import goormton.backend.somgil.domain.review.domain.Review;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +16,7 @@ public class ReviewQueryDslRepositoryImpl implements ReviewQueryDslRepository {
     public List<Review> findReviewsByPackageDetailsId(String packageId) {
         QReview review = QReview.review;
         return queryFactory.selectFrom(review)
-                .where(review.packageDetails.packageId.eq(packageId))
+                .where(review.packages.packageId.eq(packageId))
                 .fetch();
     }
 

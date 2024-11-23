@@ -3,7 +3,6 @@ package goormton.backend.somgil.domain.driver.presentation;
 import goormton.backend.somgil.domain.driver.service.DriverService;
 import goormton.backend.somgil.domain.packages.dto.request.CustomPackageRequest;
 import goormton.backend.somgil.domain.packages.dto.request.PackageRequest;
-import goormton.backend.somgil.domain.packages.dto.response.PackageDetailResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

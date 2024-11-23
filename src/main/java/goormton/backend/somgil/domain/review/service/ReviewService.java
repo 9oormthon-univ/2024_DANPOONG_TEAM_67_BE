@@ -1,7 +1,7 @@
 package goormton.backend.somgil.domain.review.service;
 
-import goormton.backend.somgil.domain.packages.domain.PackageDetails;
-import goormton.backend.somgil.domain.packages.domain.repository.PackageDetailsRepository;
+import goormton.backend.somgil.domain.packages.domain.Packages;
+import goormton.backend.somgil.domain.packages.domain.repository.PackagesRepository;
 import goormton.backend.somgil.domain.review.domain.Review;
 import goormton.backend.somgil.domain.review.domain.repository.ReviewRepository;
 import goormton.backend.somgil.domain.review.dto.request.ReviewRequest;
@@ -23,19 +23,19 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
-    private final PackageDetailsRepository packageDetailsRepository;
+    private final PackagesRepository packagesRepository;
 
 //    리뷰 작성
     @Transactional
     public void writeReview(ReviewRequest reviewRequest) {
         User loggedUser = getCurrentUser();
 
-        PackageDetails packageDetails = packageDetailsRepository.findByPackageId(reviewRequest.getPackageID())
+        Packages packages = packagesRepository.findByPackageId(reviewRequest.getPackageID())
                 .orElseThrow(() -> new IllegalArgumentException("해당 패키지를 찾을 수 없습니다."));
 
         Review review = Review.builder()
                 .user(loggedUser)
-                .packageDetails(packageDetails)
+                .packages(packages)
                 .rating(reviewRequest.getRating())
                 .content(reviewRequest.getContent())
                 .build();
