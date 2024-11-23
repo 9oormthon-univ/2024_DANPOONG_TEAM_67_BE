@@ -3,6 +3,7 @@ package goormton.backend.somgil.domain.packages.dto.response;
 import goormton.backend.somgil.domain.course.dto.response.CourseResponse;
 import goormton.backend.somgil.domain.review.dto.response.ReviewResponse;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class PackagesDetailResponse {
 
     private String name;
