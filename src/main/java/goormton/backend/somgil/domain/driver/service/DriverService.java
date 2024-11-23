@@ -8,8 +8,8 @@ import goormton.backend.somgil.domain.course.domain.repository.BaseCourseReposit
 import goormton.backend.somgil.domain.course.domain.repository.DriveCourseRepository;
 import goormton.backend.somgil.domain.course.domain.repository.TagRepository;
 import goormton.backend.somgil.domain.course.domain.repository.UserCourseRepository;
-import goormton.backend.somgil.domain.course.dto.BaseCourseResponse;
-import goormton.backend.somgil.domain.course.dto.DriveCourseResponse;
+import goormton.backend.somgil.domain.course.dto.response.BaseCourseResponse;
+import goormton.backend.somgil.domain.course.dto.response.DriveCourseResponse;
 import goormton.backend.somgil.domain.driver.domain.Driver;
 import goormton.backend.somgil.domain.driver.domain.repository.DriverRepository;
 import goormton.backend.somgil.domain.driver.exception.NoAvailableDriverException;
@@ -20,7 +20,6 @@ import goormton.backend.somgil.domain.packages.domain.repository.UserPackageRepo
 import goormton.backend.somgil.domain.packages.dto.request.CustomPackageRequest;
 import goormton.backend.somgil.domain.packages.dto.request.PackageRequest;
 import goormton.backend.somgil.domain.packages.dto.response.PackageDetailResponse;
-import goormton.backend.somgil.domain.packages.dto.response.PackageListResponse;
 import goormton.backend.somgil.domain.user.domain.User;
 import goormton.backend.somgil.domain.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,8 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -58,6 +55,10 @@ public class DriverService {
         // UserPackage 생성 및 저장
         UserPackage userPackage = new UserPackage();
         userPackage.setUser(loggedInUser);
+        userPackage.setAdultNumber(packageRequest.getAdultNumber());
+        userPackage.setChildNumber(packageRequest.getChildNumber());
+        userPackage.setOrphanNumber(packageRequest.getOrphanNumber());
+        userPackage.setOption(packageRequest.getOption());
 
         // PackageDetails 조회
         PackageDetails packageDetails = packageDetailsRepository.findByPackageId(packageRequest.getPackageId())
@@ -108,77 +109,51 @@ public class DriverService {
         User loggedInUser = getCurrentUser();
 
         // Custom PackageDetails 생성
-        PackageDetails customPackageDetails = new PackageDetails();
-        customPackageDetails.setPackageId("Custom" + UUID.randomUUID());
-        customPackageDetails.setName("Custom Package");
-        customPackageDetails.setDescription("Customized Package");
-        customPackageDetails.setStartDate(pkgRequest.getStartDate());
-        customPackageDetails.setEndDate(pkgRequest.getEndDate());
+        PackageDetails customPackageDetails = PackageDetails.builder()
+                .packageId("Custom" + UUID.randomUUID())
+                .name(pkgRequest.getRegion() + " Package") // 지역명을 패키지 이름으로 사용
+                .description("Custom package for region: " + pkgRequest.getRegion())
+                .startDate(pkgRequest.getDate())
+                .endDate(pkgRequest.getDate())
+                .build();
         packageDetailsRepository.save(customPackageDetails);
 
         // UserPackage 생성 및 저장
-        UserPackage userPackage = new UserPackage();
-        userPackage.setUser(loggedInUser);
-        userPackage.setPackageDetailsId(customPackageDetails.getId());
-        userPackage.setStartDate(pkgRequest.getStartDate().atStartOfDay());
-        userPackage.setEndDate(pkgRequest.getEndDate().atTime(23, 59, 59));
-
-        LocalDate startDate = pkgRequest.getStartDate();
-        LocalDate endDate = pkgRequest.getEndDate(); // 끝나는 날짜를 가져오는 메서드가 필요
-
-        long daysBetween = ChronoUnit.DAYS.between(startDate, endDate);
-
-        List<Long> userCourseIds = new ArrayList<>();
-        for (int i = 0; i <= daysBetween; i++) {
-            LocalDate date = startDate.plusDays(i);
-
-            BaseCourse baseCourse = new BaseCourse();
-            baseCourse.setDay(i + 1);
-            baseCourse.setRegion(pkgRequest.getRegion());
-            baseCourse.setPlace("Custom Place " + (i + 1));
-            baseCourse.setStartTime(LocalTime.of(9, 0));
-            baseCourse.setEndTime(LocalTime.of(17, 0));
-            baseCourseRepository.save(baseCourse);
-
-            UserCourse userCourse = UserCourse.builder()
-                    .date(date)
-                    .userPackageId(userPackage.getId())
-                    .build();
-
-            userCourse.setBaseCourse(baseCourse);
-
-            setStartDateTime(userCourse, date);
-            setEndDateTime(userCourse, date);
-            userCourseRepository.save(userCourse); // 저장
-            userCourseIds.add(userCourse.getId());
-        }
-
-        userPackage.setCourseIds(userCourseIds);
+        UserPackage userPackage = UserPackage.builder()
+                .user(loggedInUser)
+                .packageDetailsId(customPackageDetails.getId())
+                .startDate(pkgRequest.getDate().atStartOfDay())
+                .endDate(pkgRequest.getDate().atTime(23, 59, 59))
+                .build();
         userPackageRepository.save(userPackage);
 
+        // BaseCourse 생성 및 저장
+        BaseCourse baseCourse = BaseCourse.builder()
+                .day(1) // 단일 일정으로 설정
+                .region(pkgRequest.getRegion())
+                .place(pkgRequest.getStartPlace()) // 시작 장소로 설정
+                .description("Custom base course for " + pkgRequest.getRegion())
+                .startTime(pkgRequest.getTime().toLocalTime())
+                .endTime(pkgRequest.getTime().toLocalTime().plusHours(2)) // 2시간 추가
+                .build();
+        baseCourseRepository.save(baseCourse);
+
+        // UserCourse 생성 및 저장
+        UserCourse userCourse = UserCourse.builder()
+                .date(pkgRequest.getDate())
+                .userPackageId(userPackage.getId()) // UserPackage ID 참조
+                .baseCourse(baseCourse) // BaseCourse 연계
+                .build();
+
+        setStartDateTime(userCourse, pkgRequest.getDate());
+        setEndDateTime(userCourse, pkgRequest.getDate());
+        userCourseRepository.save(userCourse);
+
+        // Driver를 DriveCourse에 배정
         assignDriversToDriveCourses(userPackage);
 
         return convertToResponse(userPackage);
     }
-
-//    @Transactional
-//    public List<BaseCourseResponse> getCoursesByPackageId(String packageId) {
-//        // packageId로 BaseCourse 조회
-//        List<BaseCourse> baseCourses = baseCourseRepository.findByPackageId(packageId);
-//
-//        // BaseCourse를 BaseCourseResponse로 변환
-//        return baseCourses.stream()
-//                .map(course -> BaseCourseResponse.builder()
-//                        .region(course.getRegion())
-//                        .place(course.getPlace())
-//                        .description(course.getDescription())
-//                        .image(course.getImage())
-//                        .startTime(course.getStartTime())
-//                        .endTime(course.getEndTime())
-//                        .build())
-//                .collect(Collectors.toList());
-//    }
-
 
     @Transactional
     public void assignDriversToDriveCourses(UserPackage userPackage) {

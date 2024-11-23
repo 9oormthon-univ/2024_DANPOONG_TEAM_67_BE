@@ -1,4 +1,4 @@
-package goormton.backend.somgil.domain.course.dto;
+package goormton.backend.somgil.domain.course.dto.request;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
