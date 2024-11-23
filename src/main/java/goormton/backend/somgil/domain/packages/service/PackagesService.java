@@ -20,14 +20,13 @@ public class PackagesService {
 
     private final PackagesRepository packagesRepository;
 
-    // 기본 정렬: reviewRating 순
     @Transactional(readOnly = true)
-    public List<PackagesResponse> getSortedPackages(String sortOption) {
-        // 패키지 리스트 조회
-        List<Packages> packagesList = packagesRepository.findAll();
+    public List<PackagesResponse> getSortedPackages(String sortOption, String type) {
+        // QueryDSL로 데이터 조회
+        List<Packages> packagesList = packagesRepository.findByTypeAndSort(type, sortOption);
 
-        // Packages -> PackagesResponse로 변환
-        List<PackagesResponse> responseList = packagesList.stream()
+        // Packages -> PackagesResponse 변환
+        return packagesList.stream()
                 .map(packages -> PackagesResponse.builder()
                         .name(packages.getName())
                         .packageId(packages.getPackageId())
@@ -39,15 +38,6 @@ public class PackagesService {
                         .build()
                 )
                 .collect(Collectors.toList());
-
-        // 정렬 옵션에 따라 정렬
-        if ("reviewNumber".equalsIgnoreCase(sortOption)) {
-            responseList.sort(Comparator.comparingInt(PackagesResponse::getReviewNumber).reversed()); // 리뷰 수 내림차순
-        } else { // 기본 정렬: reviewRating
-            responseList.sort(Comparator.comparingDouble(PackagesResponse::getReviewRating).reversed()); // 평점 내림차순
-        }
-
-        return responseList;
     }
 
     // 추천 패키지

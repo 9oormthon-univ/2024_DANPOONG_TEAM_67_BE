@@ -7,4 +7,5 @@ import java.util.List;
 public interface PackagesQueryDslRepository {
 
     List<Packages> findAllByIsRecommendedTrue();
+    List<Packages> findByTypeAndSort(String type, String sortOption);
 }
