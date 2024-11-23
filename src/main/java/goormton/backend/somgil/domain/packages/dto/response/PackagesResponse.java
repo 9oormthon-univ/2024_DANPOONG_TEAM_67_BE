@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class PackagesResponse {
 
     private String name;
+    private String description;
 
     private String packageId;
 

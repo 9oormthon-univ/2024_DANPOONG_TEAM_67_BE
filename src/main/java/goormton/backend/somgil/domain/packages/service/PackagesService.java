@@ -51,28 +51,18 @@ public class PackagesService {
     @Transactional(readOnly = true)
     public List<PackagesResponse> getRecommendedPackages() {
         // 패키지 리스트 조회
-        List<Packages> packagesList = packagesRepository.findAll();
+        List<Packages> packagesList = packagesRepository.findAllByIsRecommendedTrue();
 
         // Packages -> PackagesResponse로 변환
         List<PackagesResponse> responseList = packagesList.stream()
                 .map(packages -> PackagesResponse.builder()
                         .name(packages.getName())
+                        .description(packages.getDescription())
                         .packageId(packages.getPackageId())
-                        .reviewRating(packages.computeMeanReviewRating())
-                        .reviewNumber(packages.getReviewNumber())
                         .image1(packages.getImage1())
-                        .image2(packages.getImage2())
-                        .image3(packages.getImage3())
                         .build()
                 )
                 .collect(Collectors.toList());
-
-        // 정렬 옵션에 따라 정렬
-        if ("reviewNumber".equalsIgnoreCase(sortOption)) {
-            responseList.sort(Comparator.comparingInt(PackagesResponse::getReviewNumber).reversed()); // 리뷰 수 내림차순
-        } else { // 기본 정렬: reviewRating
-            responseList.sort(Comparator.comparingDouble(PackagesResponse::getReviewRating).reversed()); // 평점 내림차순
-        }
 
         return responseList;
     }

@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface PackagesQueryDslRepository {
 
-    List<Packages> findAllByIsRecommendedTrue(boolean isRecommended);
+    List<Packages> findAllByIsRecommendedTrue();
 }

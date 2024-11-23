@@ -1,6 +1,5 @@
 package goormton.backend.somgil.domain.packages.presentation;
 
-import goormton.backend.somgil.domain.driver.service.DriverService;
 import goormton.backend.somgil.domain.packages.dto.response.PackagesResponse;
 import goormton.backend.somgil.domain.packages.service.PackagesService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,7 +9,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -35,15 +37,15 @@ public class PackageController {
     }
 
     // 추천 패키지만 반환
-    @Operation(summary = "추천 패키지 리스트", description = "추천 패키지 리스트 가져오기")
+    @Operation(summary = "MD 추천 패키지 리스트", description = "추천 패키지 리스트 가져오기")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "불러오기 성공 ", content = {@Content(mediaType = "application/json", schema = @Schema(implementation =  PackageListResponse.class))}),
+            @ApiResponse(responseCode = "200", description = "불러오기 성공 ", content = {@Content(mediaType = "application/json", schema = @Schema(implementation =  PackagesResponse.class))}),
             @ApiResponse(responseCode = "400", description = "불러오기 실패", content = {@Content(mediaType = "application/json")}),
     })
     @GetMapping("/recommended")
-    public ResponseEntity<List<PackageListResponse>> getRecommendedPackages() {
+    public ResponseEntity<List<PackagesResponse>> getRecommendedPackages() {
 
-        List<PackageListResponse> recommendedPackages = packageService.getRecommendedPackages();
+        List<PackagesResponse> recommendedPackages = packagesService.getRecommendedPackages();
         return ResponseEntity.ok(recommendedPackages);
     }
 }
