@@ -1,5 +1,7 @@
 package goormton.backend.somgil.domain.packages.presentation;
 
+import goormton.backend.somgil.domain.packages.dto.request.PackageIdRequest;
+import goormton.backend.somgil.domain.packages.dto.response.PackagesDetailResponse;
 import goormton.backend.somgil.domain.packages.dto.response.PackagesResponse;
 import goormton.backend.somgil.domain.packages.service.PackagesService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,10 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -48,4 +47,16 @@ public class PackageController {
         List<PackagesResponse> recommendedPackages = packagesService.getRecommendedPackages();
         return ResponseEntity.ok(recommendedPackages);
     }
+
+//    // 패키지 세부정보 반환
+//    @Operation(summary = "패키지의 세부정보 반환", description = "packageId로 패키지 객체를 불러와 패키지의 세부 정보 반환")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "불러오기 성공 ", content = {@Content(mediaType = "application/json", schema = @Schema(implementation =  PackagesResponse.class))}),
+//            @ApiResponse(responseCode = "400", description = "불러오기 실패", content = {@Content(mediaType = "application/json")}),
+//    })
+//    @PostMapping("/details")
+//    public ResponseEntity<PackagesDetailResponse> getPackageDetails(@RequestBody PackageIdRequest request) {
+//        PackagesDetailResponse response = packagesService.getPackageDetails(request.getPackageId());
+//        return ResponseEntity.ok(response);
+//    }
 }

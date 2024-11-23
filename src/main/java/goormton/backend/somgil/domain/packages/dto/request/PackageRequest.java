@@ -16,8 +16,11 @@ public class PackageRequest {
     @NotNull
     private String packageId; // 사용자가 선택한 패키지 ID
 
+    @Builder.Default
     private int adultNumber = 0;
+    @Builder.Default
     private int childNumber = 0;
+    @Builder.Default
     private int orphanNumber = 0;
 
     private String option;

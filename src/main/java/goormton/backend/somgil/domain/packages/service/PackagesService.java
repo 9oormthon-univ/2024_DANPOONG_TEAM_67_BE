@@ -47,7 +47,7 @@ public class PackagesService {
         return responseList;
     }
 
-    // 기본 정렬: reviewRating 순
+    // 추천 패키지
     @Transactional(readOnly = true)
     public List<PackagesResponse> getRecommendedPackages() {
         // 패키지 리스트 조회
@@ -66,5 +66,5 @@ public class PackagesService {
 
         return responseList;
     }
-
 }
+
