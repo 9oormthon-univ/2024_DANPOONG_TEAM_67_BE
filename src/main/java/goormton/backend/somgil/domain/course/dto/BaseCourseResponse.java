@@ -2,27 +2,27 @@ package goormton.backend.somgil.domain.course.dto;
 
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class CourseResponse {
+public class BaseCourseResponse {
 
     private String region;
     private String place;
     private String description;
     private String image;
-    private LocalDateTime start;
-    private LocalDateTime end;
+    private LocalTime startTime;
+    private LocalTime endTime;
 
     @Builder
-    public CourseResponse(String region, String place, String description, String image, LocalDateTime start, LocalDateTime end) {
+    public BaseCourseResponse(String region, String place, String description, String image, LocalTime startTime, LocalTime endTime) {
         this.region = region;
         this.place = place;
         this.description = description;
         this.image = image;
-        this.start = start;
-        this.end = end;
+        this.startTime = startTime;
+        this.endTime = endTime;
     }
 }
