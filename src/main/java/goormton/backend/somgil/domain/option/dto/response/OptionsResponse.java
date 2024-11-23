@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class OptionResponse {
+public class OptionsResponse {
 
     private String content;
     private boolean checked;

@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/package")
 @RequiredArgsConstructor
-@io.swagger.v3.oas.annotations.tags.Tag(name = "Packages", description = "Packages API")
+@Tag(name = "Packages", description = "Packages API")
 public class PackageController {
 
     private final PackagesService packagesService;
@@ -48,15 +49,15 @@ public class PackageController {
         return ResponseEntity.ok(recommendedPackages);
     }
 
-//    // 패키지 세부정보 반환
-//    @Operation(summary = "패키지의 세부정보 반환", description = "packageId로 패키지 객체를 불러와 패키지의 세부 정보 반환")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "불러오기 성공 ", content = {@Content(mediaType = "application/json", schema = @Schema(implementation =  PackagesResponse.class))}),
-//            @ApiResponse(responseCode = "400", description = "불러오기 실패", content = {@Content(mediaType = "application/json")}),
-//    })
-//    @PostMapping("/details")
-//    public ResponseEntity<PackagesDetailResponse> getPackageDetails(@RequestBody PackageIdRequest request) {
-//        PackagesDetailResponse response = packagesService.getPackageDetails(request.getPackageId());
-//        return ResponseEntity.ok(response);
-//    }
+    // 패키지 세부정보 반환
+    @Operation(summary = "패키지의 세부정보 반환", description = "packageId로 패키지 객체를 불러와 패키지의 세부 정보 반환")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "불러오기 성공 ", content = {@Content(mediaType = "application/json", schema = @Schema(implementation =  PackageIdRequest.class))}),
+            @ApiResponse(responseCode = "400", description = "불러오기 실패", content = {@Content(mediaType = "application/json")}),
+    })
+    @PostMapping("/details")
+    public ResponseEntity<PackagesDetailResponse> getPackageDetails(@RequestBody PackageIdRequest request) {
+        PackagesDetailResponse response = packagesService.getPackageDetails(request.getPackageId());
+        return ResponseEntity.ok(response);
+    }
 }
