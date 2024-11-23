@@ -6,7 +6,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -29,6 +28,12 @@ public class User implements UserDetails {
 
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> role;
+
+    public boolean isDriver() {
+        return role.contains("ROLE_DRIVER");
+    }
+
+    private boolean available = true; // 기본값은 예약 가능
 
     @Builder
     public User(String email, String nickname, String kakaoId) {
