@@ -1,7 +1,7 @@
 package goormton.backend.somgil.domain.packages.domain;
 
 import goormton.backend.somgil.domain.course.domain.Course;
-import goormton.backend.somgil.domain.option.domain.Option;
+import goormton.backend.somgil.domain.option.domain.Options;
 import goormton.backend.somgil.domain.review.domain.Review;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -48,7 +48,7 @@ public class Packages {
     private List<Course> courseList = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY)
-    private List<Option> optionList = new ArrayList<>();
+    private List<Options> optionList = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY)
     private List<Review> reviewList = new ArrayList<>();

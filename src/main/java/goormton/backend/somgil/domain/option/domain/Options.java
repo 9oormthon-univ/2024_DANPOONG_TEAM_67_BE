@@ -14,7 +14,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Option {
+public class Options {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

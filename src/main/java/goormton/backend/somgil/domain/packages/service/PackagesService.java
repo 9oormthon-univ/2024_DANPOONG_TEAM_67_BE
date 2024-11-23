@@ -1,8 +1,11 @@
 package goormton.backend.somgil.domain.packages.service;
 
+import goormton.backend.somgil.domain.course.dto.response.CourseResponse;
 import goormton.backend.somgil.domain.packages.domain.Packages;
 import goormton.backend.somgil.domain.packages.domain.repository.PackagesRepository;
+import goormton.backend.somgil.domain.packages.dto.response.PackagesDetailResponse;
 import goormton.backend.somgil.domain.packages.dto.response.PackagesResponse;
+import goormton.backend.somgil.domain.review.dto.response.ReviewResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,5 +69,48 @@ public class PackagesService {
 
         return responseList;
     }
-}
 
+    public PackagesDetailResponse getPackageDetails(String packageId) {
+        Packages packages = packagesRepository.findByPackageId(packageId)
+                .orElseThrow(() -> new IllegalArgumentException("Package not found with id: " + packageId));
+
+        // 데이터 매핑
+        return mapToResponse(packages);
+    }
+
+    private PackagesDetailResponse mapToResponse(Packages packages) {
+        return PackagesDetailResponse.builder()
+                .name(packages.getName())
+                .description(packages.getDescription())
+                .packageId(packages.getPackageId())
+                .type(packages.getType())
+                .isRecommended(packages.isRecommended())
+                .AdultPrice(packages.getAdultPrice())
+                .ChildPrice(packages.getChildPrice())
+                .InfantPrice(packages.getInfantPrice())
+                .reviewRating(packages.computeMeanReviewRating())
+                .reviewNumber(packages.getReviewNumber())
+                .image1(packages.getImage1())
+                .image2(packages.getImage2())
+                .image3(packages.getImage3())
+                .courseList(packages.getCourseList().stream()
+                        .map(course -> CourseResponse.builder()
+                                .day(course.getDay())
+                                .content(course.getContent())
+                                .build()
+                                )
+                        .collect(Collectors.toList()))
+                .reviewList(packages.getReviewList().stream()
+                        .map(review -> ReviewResponse.builder()
+                                .userName(review.getUser().getNickname())
+                                .rating(review.getRating())
+                                .content(review.getContent())
+                                .createdAt(review.getCreatedAt())
+                                .updatedAt(review.getUpdatedAt())
+                                .build()
+                        )
+                        .collect(Collectors.toList()))
+                .build();
+    }
+
+}
