@@ -1,6 +1,5 @@
 package goormton.backend.somgil.domain.packages.domain;
 
-import goormton.backend.somgil.domain.course.domain.BaseCourse;
 import goormton.backend.somgil.domain.course.domain.DriveCourse;
 import goormton.backend.somgil.domain.course.domain.UserCourse;
 import goormton.backend.somgil.domain.user.domain.User;
@@ -23,10 +22,16 @@ public class UserPackage {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     private Long packageDetailsId; // PackageDetails ID 참조
+
+    private int adultNumber;
+    private int childNumber;
+    private int orphanNumber;
+
+    private String option;
 
     @ElementCollection
     private List<Long> courseIds = new ArrayList<>(); // UserCourse ID 목록 저장
@@ -38,10 +43,12 @@ public class UserPackage {
     private LocalDateTime endDate; // 사용자 선택 종료일
 
     @Builder
-    public UserPackage(LocalDateTime startDate, LocalDateTime endDate, Long packageDetailsId) {
+    public UserPackage(User user, Long packageDetailsId, String option, LocalDateTime startDate, LocalDateTime endDate) {
+        this.user = user;
+        this.packageDetailsId = packageDetailsId;
+        this.option = option;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.packageDetailsId = packageDetailsId;
     }
 
     public void addUserCourse(UserCourse course) {
@@ -53,29 +60,4 @@ public class UserPackage {
         this.driveCourseIds.add(course.getId());
         course.setUserPackageId(this.getId());
     }
-
-//    public void updateStartAndEndTime() {
-//        List<BaseCourse> courses = packageDetails.getCourses();
-//
-//        if (courses != null && !courses.isEmpty()) {
-//            this.startDate = courses.stream()
-//                    .map(BaseCourse::getStart)
-//                    .min(LocalDateTime::compareTo)
-//                    .orElse(null);
-//
-//            this.endDate = courses.stream()
-//                    .map(BaseCourse::getEnd)
-//                    .max(LocalDateTime::compareTo)
-//                    .orElse(null);
-//        } else {
-//            this.startDate = null;
-//            this.endDate = null;
-//        }
-//    }
-//
-//    @PrePersist
-//    @PreUpdate
-//    private void prePersistAndUpdate() {
-//        updateStartAndEndTime();
-//    }
 }

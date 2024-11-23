@@ -1,9 +1,10 @@
 package goormton.backend.somgil.domain.packages.dto.request;
 
-import jakarta.validation.constraints.NotNull;
+import goormton.backend.somgil.domain.course.dto.request.CourseRequest;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Builder
 @Getter
@@ -12,12 +13,10 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class CustomPackageRequest {
 
-    @NotNull
     private String region;
-
-//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    private LocalDate startDate;
-
-//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    private LocalDate endDate;
+    private int peopleNumber;
+    private LocalDate date;
+    private LocalDateTime time;
+    private String startPlace;
+    private String endPlace;
 }

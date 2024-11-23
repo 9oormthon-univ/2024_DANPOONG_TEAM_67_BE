@@ -16,6 +16,12 @@ public class PackageRequest {
     @NotNull
     private String packageId; // 사용자가 선택한 패키지 ID
 
+    private int adultNumber = 0;
+    private int childNumber = 0;
+    private int orphanNumber = 0;
+
+    private String option;
+
 //    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate startDate;
 
