@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.channel.ChannelOption;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.DefaultUriBuilderFactory;
@@ -28,10 +29,10 @@ public class WebClientConfig {
                 .build();
     }
 
+    @Primary
     @Bean(name = "webClientObjectMapper")
     public ObjectMapper objectMapper(){
         return new ObjectMapper();
     }
-
 
 }

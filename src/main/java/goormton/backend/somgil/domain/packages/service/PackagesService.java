@@ -10,7 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -98,12 +99,22 @@ public class PackagesService {
                                 .userName(review.getUser().getNickname())
                                 .rating(review.getRating())
                                 .content(review.getContent())
-                                .createdAt(review.getCreatedAt())
-                                .updatedAt(review.getUpdatedAt())
+                                .createdAt(convertToString(review.getCreatedAt()))
+                                .updatedAt(convertToString(review.getUpdatedAt()))
                                 .build()
                         )
                         .collect(Collectors.toList()))
                 .build();
+    }
+
+    private LocalDateTime convertToLocalDateTime(String dateTimeString) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return LocalDateTime.parse(dateTimeString, formatter);
+    }
+
+    private String convertToString(LocalDateTime localDateTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return localDateTime.format(formatter);
     }
 
 }

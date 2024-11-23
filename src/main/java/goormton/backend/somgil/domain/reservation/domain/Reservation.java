@@ -19,15 +19,19 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+//    예약자 관련 필드
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private User user; // 예약자
 
+    private String status = "IN_PROGRESS";  // COMPLETED, FINISHED
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "package_id", nullable = false)
+    @JoinColumn(name = "package_id")
     private Packages packages; // 예약된 패키지
 
     private LocalDate date; // 예약 날짜
+    private String time; // 예약 시간(현지인 기사용)
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "reservation_id")
@@ -40,8 +44,9 @@ public class Reservation {
     private int totalPrice; // 총 가격
 
     @Builder
-    public Reservation(User user, Packages packages, LocalDate date, List<Options> selectedOptions, int adultCount, int childCount, int infantCount, int totalPrice) {
+    public Reservation(User user, String status, Packages packages, LocalDate date, List<Options> selectedOptions, int adultCount, int childCount, int infantCount, int totalPrice, User driver, String pickupLocation, String dropOffLocation, String time) {
         this.user = user;
+        this.status = status;
         this.packages = packages;
         this.date = date;
         this.selectedOptions = selectedOptions;
@@ -49,5 +54,20 @@ public class Reservation {
         this.childCount = childCount;
         this.infantCount = infantCount;
         this.totalPrice = totalPrice;
+        this.driver = driver;
+        this.pickupLocation = pickupLocation;
+        this.dropOffLocation = dropOffLocation;
+        this.time = time;
     }
+
+//    기사 관련 필드
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "driver_id", nullable = true)
+    private User driver; // 기사 (ROLE_DRIVER 사용자)
+
+    @Column(nullable = false)
+    private String pickupLocation; // 픽업 장소
+
+    @Column(nullable = false)
+    private String dropOffLocation; // 도착 장소
 }

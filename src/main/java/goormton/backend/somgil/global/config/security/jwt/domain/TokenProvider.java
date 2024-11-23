@@ -73,7 +73,6 @@ public class TokenProvider {
             String info = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().getSubject();
             log.info("토큰으로 회원 정보 추출 완료 info:{}",info);
             return info;
-
     }
 
     public String resolveToken(HttpServletRequest request){

@@ -4,10 +4,7 @@ import goormton.backend.somgil.domain.course.domain.Course;
 import goormton.backend.somgil.domain.option.domain.Options;
 import goormton.backend.somgil.domain.review.domain.Review;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,4 +61,5 @@ public class Packages {
     public int getReviewNumber() {
         return reviewList.size();
     }
+
 }
