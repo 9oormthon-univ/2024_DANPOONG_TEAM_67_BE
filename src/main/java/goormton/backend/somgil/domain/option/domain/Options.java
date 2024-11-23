@@ -1,13 +1,7 @@
 package goormton.backend.somgil.domain.option.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @Getter
@@ -20,6 +14,13 @@ public class Options {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String content;
     private boolean checked = false;
+
+    @Builder
+    public Options(final String content, final boolean checked) {
+        this.content = content;
+        this.checked = checked;
+    }
 }

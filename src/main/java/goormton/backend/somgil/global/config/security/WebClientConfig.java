@@ -28,7 +28,7 @@ public class WebClientConfig {
                 .build();
     }
 
-    @Bean
+    @Bean(name = "webClientObjectMapper")
     public ObjectMapper objectMapper(){
         return new ObjectMapper();
     }
