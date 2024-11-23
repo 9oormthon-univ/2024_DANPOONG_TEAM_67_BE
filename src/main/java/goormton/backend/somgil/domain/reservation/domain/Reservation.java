@@ -24,7 +24,10 @@ public class Reservation {
     @JoinColumn(name = "user_id")
     private User user; // 예약자
 
-    private String status = "IN_PROGRESS";  // COMPLETED, FINISHED
+    @JoinColumn(unique = true)
+    private String reservationId;
+
+    private String status = "IN_PROGRESS";  // COMPLETED, FINISHED, CANCELLED
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "package_id")
@@ -68,9 +71,6 @@ public class Reservation {
     @JoinColumn(name = "driver_id")
     private User driver; // 기사 (ROLE_DRIVER 사용자)
 
-    @Column(nullable = false)
     private String pickupLocation; // 픽업 장소
-
-    @Column(nullable = false)
     private String dropOffLocation; // 도착 장소
 }

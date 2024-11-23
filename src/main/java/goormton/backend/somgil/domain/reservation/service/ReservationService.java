@@ -123,6 +123,40 @@ public class ReservationService {
                 .build();
     }
 
+    @Transactional
+    public List<ReservationResponse> findAllByUser() {
+        User loggedUser = getCurrentUser();
+
+        // 사용자의 예약 조회
+        List<Reservation> reservations = reservationRepository.findReservationsByUser(loggedUser.getId());
+
+        // Reservation을 ReservationResponse로 변환
+        return reservations.stream()
+                .map(reservation -> ReservationResponse.builder()
+                        .packageName(reservation.getPackages().getName())
+                        .startDate(reservation.getStartDate().toString())
+                        .endDate(reservation.getEndDate().toString())
+                        .selectedOptions(reservation.getSelectedOptions().stream()
+                                .map(Options::getContent)
+                                .collect(Collectors.toList()))
+                        .adultCount(reservation.getAdultCount())
+                        .childCount(reservation.getChildCount())
+                        .infantCount(reservation.getInfantCount())
+                        .totalPrice(reservation.getTotalPrice())
+                        .pickupLocation(reservation.getPickupLocation())
+                        .dropOffLocation(reservation.getDropOffLocation())
+                        .status(reservation.getStatus())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void cancelledReservation(String reservationId) {
+        Reservation reservation = reservationRepository.findByReservationId(reservationId);
+        reservation.setStatus("CANCELLED");
+        reservationRepository.save(reservation);
+    }
+
     private int calculatePrice(String pickupLocation, String dropOffLocation) {
         // 거리 기반으로 요금을 계산하는 로직 (예: 기본 요금 + 거리 요금)
         return 10000; // 임시 값
