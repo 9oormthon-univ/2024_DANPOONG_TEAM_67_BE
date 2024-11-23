@@ -15,6 +15,9 @@ public class ReservationResponse {
     private String packageName;
     private String packageId;
     private String userName;
+    private String reservationId;
+
+    private String status;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private String startDate;
@@ -27,4 +30,7 @@ public class ReservationResponse {
     private int childCount;
     private int infantCount;
     private int totalPrice;
+
+    private String pickupLocation; // 픽업 장소
+    private String dropOffLocation; // 도착 장소
 }

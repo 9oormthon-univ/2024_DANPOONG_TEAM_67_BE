@@ -5,6 +5,8 @@ import goormton.backend.somgil.domain.reservation.domain.QReservation;
 import goormton.backend.somgil.domain.reservation.domain.Reservation;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 public class ReservationQueryDslRepositoryImpl implements ReservationQueryDslRepository {
     private final JPAQueryFactory queryFactory;
@@ -19,5 +21,16 @@ public class ReservationQueryDslRepositoryImpl implements ReservationQueryDslRep
                         reservation.packages.packageId.eq(packageId)
                 )
                 .fetchFirst();
+    }
+
+    @Override
+    public List<Reservation> findReservationsByUser(Long userId) {
+        QReservation reservation = QReservation.reservation;
+
+        return queryFactory.selectFrom(reservation)
+                .where(
+                        reservation.user.id.eq(userId)
+                )
+                .fetch();
     }
 }
