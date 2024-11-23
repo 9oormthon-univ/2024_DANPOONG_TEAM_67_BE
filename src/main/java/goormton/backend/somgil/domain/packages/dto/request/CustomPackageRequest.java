@@ -1,10 +1,8 @@
 package goormton.backend.somgil.domain.packages.dto.request;
 
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -12,21 +10,20 @@ import java.util.List;
 
 @Builder
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PackageRequest {
+public class CustomPackageRequest {
+
     @NotNull
-    private String packageId; // 사용자가 선택한 패키지 ID
+    private String region;
 
     @Builder.Default
     private List<LocalDate> selectedDates = new ArrayList<>(); // 사용자가 선택한 날짜 리스트
-//    private String name;
+//    private boolean isCustomized;
 
     public void addSelectedDate(LocalDate selectedDate) {
-        if (selectedDates == null) {
-            selectedDates = new ArrayList<>();
-        }
-        selectedDates.add(selectedDate);
+        this.selectedDates.add(selectedDate);
     }
 
     public void removeSelectedDate(LocalDate selectedDate) {

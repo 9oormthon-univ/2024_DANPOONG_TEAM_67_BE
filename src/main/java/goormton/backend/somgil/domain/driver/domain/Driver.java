@@ -1,10 +1,9 @@
 package goormton.backend.somgil.domain.driver.domain;
 
-import goormton.backend.somgil.domain.packages.domain.Packages;
-import goormton.backend.somgil.domain.user.domain.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import goormton.backend.somgil.domain.course.domain.UserCourse;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +12,8 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 public class Driver {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,22 +25,26 @@ public class Driver {
     private String contact;
 
     @OneToMany(mappedBy = "driver", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Packages> packages = new ArrayList<>();
+    @JsonIgnore // 무한 루프 방지
+    private List<UserCourse> courses = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id") // 외래 키 컬럼명 설정
-    private User user;
+    @Builder
+    public Driver(String driverId, String name, String contact) {
+        this.driverId = driverId;
+        this.name = name;
+        this.contact = contact;
+    }
 
-    public void addPackage(Packages pkg) {
-        if (pkg != null) {
-            this.packages.add(pkg);
-            pkg.setDriver(this); // 양방향 관계 설정
+    public void addCourse(UserCourse course) {
+        if (course != null) {
+            this.courses.add(course);
+            course.setDriver(this); // 양방향 관계 설정
         }
     }
 
-    public void removePackage(Packages pkg) {
-        if (pkg != null) {
-            this.packages.remove(pkg);
+    public void removeCourse(UserCourse course) {
+        if (course != null) {
+            this.courses.remove(course);
         }
     }
 }

@@ -1,4 +1,4 @@
-package goormton.backend.somgil.domain.driver.dto.request;
+package goormton.backend.somgil.domain.driver.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;

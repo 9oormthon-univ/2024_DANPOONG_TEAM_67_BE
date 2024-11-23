@@ -1,7 +1,7 @@
 package goormton.backend.somgil.domain.user.domain;
 
 import goormton.backend.somgil.domain.driver.domain.Driver;
-import goormton.backend.somgil.domain.packages.domain.Packages;
+import goormton.backend.somgil.domain.packages.domain.UserPackage;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -33,10 +33,7 @@ public class User implements UserDetails {
     private List<String> role;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Packages> packages = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Driver> drivers = new ArrayList<>();
+    private List<UserPackage> aPackages = new ArrayList<>();
 
     @Builder
     public User(String email, String nickname, String kakaoId) {
@@ -61,7 +58,8 @@ public class User implements UserDetails {
         return id.toString();
     }
 
-    public void addDriver(Driver driver) {
-        this.drivers.add(driver);
+    public void addPackage(UserPackage pkg) {
+        this.aPackages.add(pkg);
+        pkg.setUser(this); // 양방향 연관관계 설정
     }
 }
