@@ -52,7 +52,7 @@ public class PackageController {
     // 패키지 세부정보 반환
     @Operation(summary = "패키지의 세부정보 반환", description = "packageId로 패키지 객체를 불러와 패키지의 세부 정보 반환")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "불러오기 성공 ", content = {@Content(mediaType = "application/json", schema = @Schema(implementation =  PackageIdRequest.class))}),
+            @ApiResponse(responseCode = "200", description = "불러오기 성공 ", content = {@Content(mediaType = "application/json", schema = @Schema(implementation =  PackagesDetailResponse.class))}),
             @ApiResponse(responseCode = "400", description = "불러오기 실패", content = {@Content(mediaType = "application/json")}),
     })
     @PostMapping("/details")
