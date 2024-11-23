@@ -36,6 +36,8 @@ public class PackagesDetailResponse {
     private String image2;
     private String image3;
 
+    @Builder.Default
     private List<CourseResponse> courseList = new ArrayList<>();
+    @Builder.Default
     private List<ReviewResponse> reviewList = new ArrayList<>();
 }
