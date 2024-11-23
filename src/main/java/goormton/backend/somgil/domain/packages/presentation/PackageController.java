@@ -11,8 +11,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -61,4 +63,84 @@ public class PackageController {
         PackagesDetailResponse response = packagesService.getPackageDetails(request.getPackageId());
         return ResponseEntity.ok(response);
     }
+
+    @Operation(summary = "패키지 이미지 업로드", description = "패키지에 이미지를 업로드합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "이미지 업로드 성공", content = {@Content(mediaType = "application/json")}),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청", content = {@Content(mediaType = "application/json")})
+    })
+    @PostMapping("/upload/image/all")
+    public ResponseEntity<?> uploadPackageImages(
+            @RequestBody PackageIdRequest request,
+            @RequestParam List<MultipartFile> images
+    ) {
+        String packageId = request.getPackageId();
+        try {
+            packagesService.uploadPackageImages(packageId, images);
+            return ResponseEntity.ok("이미지 업로드 성공");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("이미지 업로드 중 문제가 발생했습니다.");
+        }
+    }
+
+    @Operation(summary = "패키지 이미지 하나 업로드", description = "패키지에 이미지를 업로드합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "이미지 업로드 성공", content = {@Content(mediaType = "application/json")}),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청", content = {@Content(mediaType = "application/json")})
+    })
+    @PostMapping("/upload/image/single")
+    public ResponseEntity<?> uploadSingleImage(@RequestBody PackageIdRequest request, @RequestParam int imageIndex, @RequestParam MultipartFile image) {
+        String packageId = request.getPackageId();
+        try {
+            packagesService.uploadSingleImage(packageId, imageIndex, image);
+            return ResponseEntity.ok("이미지 업로드 성공");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("이미지 업로드 중 문제가 발생했습니다.");
+        }
+    }
+
+    @Operation(summary = "패키지 이미지 모두 삭제", description = "패키지의 모든 이미지를 삭제합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "이미지 삭제 성공", content = {@Content(mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", description = "패키지를 찾을 수 없음", content = {@Content(mediaType = "application/json")})
+    })
+    @DeleteMapping("/delete/image/all")
+    public ResponseEntity<?> deletePackageImages(@RequestBody PackageIdRequest request) {
+        String packageId = request.getPackageId();
+        try {
+            packagesService.deletePackageImages(packageId);
+            return ResponseEntity.ok("이미지 삭제 성공");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("이미지 삭제 중 문제가 발생했습니다.");
+        }
+    }
+
+    @Operation(summary = "패키지 특정 이미지 삭제", description = "패키지의 특정 이미지를 삭제합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "이미지 삭제 성공", content = {@Content(mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", description = "패키지를 찾을 수 없음", content = {@Content(mediaType = "application/json")}),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청", content = {@Content(mediaType = "application/json")})
+    })
+    @DeleteMapping("/delete/image/single")
+    public ResponseEntity<?> deleteSingleImage(
+            @RequestBody PackageIdRequest request,
+            @RequestParam int imageIndex
+    ) {
+        String packageId = request.getPackageId();
+        try {
+            packagesService.deleteSingleImage(packageId, imageIndex);
+            return ResponseEntity.ok("이미지 삭제 성공");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("이미지 삭제 중 문제가 발생했습니다.");
+        }
+    }
+
 }

@@ -90,7 +90,7 @@ public class ReservationService {
                 .orElseThrow(() -> new IllegalArgumentException("사용 가능한 기사가 없습니다."));
 
         // 예약 총 가격 계산
-        int totalPrice = calculatePrice(request.getPickupLocation(), request.getDropOffLocation());
+        int totalPrice = calculatePrice(request);
 
         // 예약 생성
         Reservation reservation = Reservation.builder()
@@ -100,6 +100,9 @@ public class ReservationService {
                 .dropOffLocation(request.getDropOffLocation())
                 .startDate(getParsedDate(request.getDate()))
                 .time(request.getTime())
+                .adultCount(request.getAdultCount())
+                .childCount(request.getChildCount())
+                .infantCount(request.getInfantCount())
                 .totalPrice(totalPrice)
                 .driver(availableDriver)
                 .pickupLocation(request.getPickupLocation())
@@ -157,9 +160,20 @@ public class ReservationService {
         reservationRepository.save(reservation);
     }
 
-    private int calculatePrice(String pickupLocation, String dropOffLocation) {
-        // 거리 기반으로 요금을 계산하는 로직 (예: 기본 요금 + 거리 요금)
-        return 10000; // 임시 값
+    private int calculatePrice(DriverReservationRequest request) {
+        // 기본 요금
+        int baseFare = 5000;
+
+        // 성인, 아동, 유아의 개별 요금 비율
+        int adultFare = 10000;  // 성인 1명당 요금
+        int childFare = 7000;   // 아동 1명당 요금
+        int infantFare = 3000;  // 유아 1명당 요금
+
+        // 총 요금 계산
+        return baseFare
+                + (request.getAdultCount() * adultFare)
+                + (request.getChildCount() * childFare)
+                + (request.getInfantCount() * infantFare);
     }
 
     private User getCurrentUser() {

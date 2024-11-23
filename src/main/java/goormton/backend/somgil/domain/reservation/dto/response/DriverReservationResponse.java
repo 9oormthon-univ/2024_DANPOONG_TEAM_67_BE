@@ -21,5 +21,10 @@ public class DriverReservationResponse {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private String date;
     private String time;
+
+    private int adultCount;
+    private int childCount;
+    private int infantCount;
+
     private int totalPrice;
 }
