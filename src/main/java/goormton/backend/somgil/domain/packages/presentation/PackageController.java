@@ -24,15 +24,16 @@ public class PackageController {
 
     private final PackagesService packagesService;
 
-    @Operation(summary = "패키지 리스트 모두 반환", description = "존재하는 모든 패키지 리스트 반환. 기본 정렬 옵션은 별점순, 다른 옵션은 별점 갯수순")
+    @Operation(summary = "패키지 리스트를 타입별로 반환", description = "기본 정렬 옵션은 별점 평균(reviewRating)순, 다른 옵션은 별점 갯수(reviewNumber)순")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "불러오기 성공 ", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = PackagesResponse.class))}),
             @ApiResponse(responseCode = "400", description = "불러오기 실패", content = {@Content(mediaType = "application/json")}),
     })
-    @GetMapping("/list/all")
+    @GetMapping("/list")
     public ResponseEntity<List<PackagesResponse>> getPackages(
-            @RequestParam(value = "sort", defaultValue = "reviewRating") String sortOption) {
-        List<PackagesResponse> sortedPackages = packagesService.getSortedPackages(sortOption);
+            @RequestParam(value = "sort", defaultValue = "reviewRating") String sortOption,
+            @RequestParam(value = "type", required = false) String type) { // 'type' 파라미터 추가
+        List<PackagesResponse> sortedPackages = packagesService.getSortedPackages(sortOption, type); // type 전달
         return ResponseEntity.ok(sortedPackages);
     }
 

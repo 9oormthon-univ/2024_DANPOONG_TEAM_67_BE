@@ -50,7 +50,7 @@ public class Packages {
     @OneToMany(fetch = FetchType.LAZY)
     private List<Options> optionList = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "packages", fetch = FetchType.LAZY)
     private List<Review> reviewList = new ArrayList<>();
 
     public double computeMeanReviewRating() {
