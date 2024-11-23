@@ -1,13 +1,13 @@
 package goormton.backend.somgil.domain.packages.dto.response;
 
-import goormton.backend.somgil.domain.course.dto.CourseResponse;
-import goormton.backend.somgil.domain.driver.dto.request.DriverResponse;
+import goormton.backend.somgil.domain.course.dto.BaseCourseResponse;
+import goormton.backend.somgil.domain.course.dto.DriveCourseResponse;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Getter
@@ -16,26 +16,28 @@ import java.util.List;
 public class PackageResponse {
 
     private Long id;
+    private String packageId;
     private String name;
     private String description;
     private boolean isRecommended;
     private boolean isCustomized;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
-    private List<CourseResponse> courses;
+    private LocalTime startTime;
+    private LocalTime endTime;
+    private List<BaseCourseResponse> courses;
     private List<String> tags;
-    private DriverResponse driver;
+    private List<DriveCourseResponse> driveCourseResponses;
 
     @Builder
-    public PackageResponse(Long id, String name, String description, boolean isRecommended, LocalDateTime startDate, LocalDateTime endDate, List<CourseResponse> courses, List<String> tags, DriverResponse driver) {
+    public PackageResponse(Long id, String packageId, String name, String description, boolean isRecommended, LocalTime startTime, LocalTime endTime, List<BaseCourseResponse> courses, List<String> tags, List<DriveCourseResponse> driveCourseResponses) {
         this.id = id;
+        this.packageId = packageId;
         this.name = name;
         this.description = description;
         this.isRecommended = isRecommended;
-        this.startDate = startDate;
-        this.endDate = endDate;
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.courses = courses;
         this.tags = tags;
-        this.driver = driver;
+        this.driveCourseResponses = driveCourseResponses;
     }
 }

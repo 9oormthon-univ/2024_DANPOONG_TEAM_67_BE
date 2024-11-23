@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface DriverQueryDslRepository {
 
-    List<Driver> findAvailableDrivers(List<String> region, LocalDateTime startDate, LocalDateTime endDate);
-    List<Driver> findAvailableDriversByLocal(List<String> region, LocalDate startDate, LocalDate endDate);
+    List<Driver> findAvailableDrivers(String region, LocalDateTime startDate, LocalDateTime endDate);
+    List<Driver> findAvailableDriversByLocal(String region, LocalDate startDate, LocalDate endDate);
 }

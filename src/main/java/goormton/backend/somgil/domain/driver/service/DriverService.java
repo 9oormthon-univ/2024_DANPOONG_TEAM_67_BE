@@ -1,14 +1,22 @@
 package goormton.backend.somgil.domain.driver.service;
 
-import goormton.backend.somgil.domain.course.domain.Course;
+import goormton.backend.somgil.domain.course.domain.BaseCourse;
+import goormton.backend.somgil.domain.course.domain.DriveCourse;
 import goormton.backend.somgil.domain.course.domain.Tag;
-import goormton.backend.somgil.domain.course.dto.CourseResponse;
+import goormton.backend.somgil.domain.course.domain.UserCourse;
+import goormton.backend.somgil.domain.course.domain.repository.BaseCourseRepository;
+import goormton.backend.somgil.domain.course.domain.repository.DriveCourseRepository;
+import goormton.backend.somgil.domain.course.domain.repository.TagRepository;
+import goormton.backend.somgil.domain.course.domain.repository.UserCourseRepository;
+import goormton.backend.somgil.domain.course.dto.BaseCourseResponse;
+import goormton.backend.somgil.domain.course.dto.DriveCourseResponse;
 import goormton.backend.somgil.domain.driver.domain.Driver;
 import goormton.backend.somgil.domain.driver.domain.repository.DriverRepository;
-import goormton.backend.somgil.domain.driver.dto.request.DriverResponse;
 import goormton.backend.somgil.domain.driver.exception.NoAvailableDriverException;
-import goormton.backend.somgil.domain.packages.domain.Packages;
-import goormton.backend.somgil.domain.packages.domain.repository.PackagesRepository;
+import goormton.backend.somgil.domain.packages.domain.PackageDetails;
+import goormton.backend.somgil.domain.packages.domain.UserPackage;
+import goormton.backend.somgil.domain.packages.domain.repository.PackageDetailsRepository;
+import goormton.backend.somgil.domain.packages.domain.repository.UserPackageRepository;
 import goormton.backend.somgil.domain.packages.dto.request.CustomPackageRequest;
 import goormton.backend.somgil.domain.packages.dto.request.PackageRequest;
 import goormton.backend.somgil.domain.packages.dto.response.PackageResponse;
@@ -21,10 +29,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.time.LocalTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,166 +40,222 @@ import java.util.stream.Collectors;
 @Slf4j
 public class DriverService {
 
-    private final PackagesRepository packagesRepository;
+    private final PackageDetailsRepository packageDetailsRepository;
     private final DriverRepository driverRepository;
+    private final UserPackageRepository userPackageRepository;
+    private final BaseCourseRepository baseCourseRepository;
+    private final UserCourseRepository userCourseRepository;
+    private final DriveCourseRepository driveCourseRepository;
     private final UserRepository userRepository;
+    private final TagRepository tagRepository;
 
     @Transactional
-    public List<PackageResponse> assignDriversToExistingPackages(List<PackageRequest> customPackageRequests) {
-
+    public List<PackageResponse> assignDriversToExistingPackages(PackageRequest packageRequest) {
         User loggedInUser = getCurrentUser();
 
-        List<Packages> packagesToAssign = customPackageRequests.stream()
-                .map(this::convertToEntity)
-                .collect(Collectors.toList());
+        // UserPackage 생성 및 저장
+        UserPackage userPackage = new UserPackage();
+        userPackage.setUser(loggedInUser);
 
-        for (Packages pkg : packagesToAssign) {
-            // 패키지의 시작일과 종료일 계산
-            pkg.updateStartAndEndTime(); // startDate와 endDate를 설정
-            LocalDateTime packageStart = pkg.getStartDate();
-            LocalDateTime packageEnd = pkg.getEndDate();
+        PackageDetails packageDetails = packageDetailsRepository.findByPackageId(packageRequest.getPackageId())
+                .orElseThrow(() -> new IllegalArgumentException("패키지를 찾을 수 없습니다."));
+        userPackage.setPackageDetailsId(packageDetails.getId());
 
-            // 패키지의 courses에서 중복되지 않는 region 추출
-            List<String> regions = pkg.getCourses().stream()
-                    .map(Course::getRegion)
-                    .distinct()
-                    .collect(Collectors.toList());
+        userPackage.setStartDate(packageRequest.getSelectedDates().get(0).atStartOfDay());
+        userPackage.setEndDate(packageRequest.getSelectedDates().get(packageRequest.getSelectedDates().size() - 1).atTime(23, 59));
 
-            // 이용 가능한 운전자 조회
-            List<Driver> availableDrivers = driverRepository.findAvailableDrivers(regions, packageStart, packageEnd);
-            availableDrivers.forEach(driver -> System.out.println("Available drivers: " + driver.getName()));
+        userPackageRepository.save(userPackage);
 
-            if (availableDrivers.isEmpty()) {
-                log.warn("패키지 '{}'에 할당 가능한 운전자가 없습니다.", pkg.getName());
-                throw new NoAvailableDriverException("패키지 '" + pkg.getName() + "'에 할당 가능한 운전자가 없습니다.");
-            }
+        // UserCourse 생성 및 저장
+        List<Long> userCourseIds = new ArrayList<>();
+        LocalDate startDate = packageRequest.getSelectedDates().get(0);
 
-            log.debug("Available drivers for package '{}': {}", pkg.getName(), availableDrivers);
+        List<BaseCourse> baseCourses = baseCourseRepository.findAllById(packageDetails.getCourseIds());
 
-            // 운전자가 한 명 이상일 경우, 랜덤으로 선택
-            Driver selectedDriver = availableDrivers.get(new Random().nextInt(availableDrivers.size()));
-//            pkg.setDriver(selectedDriver);
-            log.info("패키지 '{}'에 운전자 '{}'를 할당했습니다.", pkg.getName(), selectedDriver.getName());
-            System.out.println("운전자" + selectedDriver + "를 할당했습니다.");
 
-            selectedDriver.addPackage(pkg);
-//            driverRepository.save(selectedDriver);
+        for (BaseCourse course : baseCourses) {
+            LocalDate courseDate = startDate.plusDays(course.getDay() - 1);
+            UserCourse userCourse = UserCourse.builder()
+                    .date(courseDate)
+                    .userPackageId(userPackage.getId())
+                    .build();
 
-            // 유저에도 패키지, 운전자 정보를 저장
-            loggedInUser.addPackage(pkg);
-            loggedInUser.addDriver(selectedDriver);
+            userCourse.setBaseCourse(course);
+
+            setStartDateTime(userCourse, courseDate);
+            setEndDateTime(userCourse, courseDate);
+            userCourseRepository.save(userCourse); // 저장
+            userCourseIds.add(userCourse.getId());
         }
 
-        // 패키지 저장
-        List<Packages> savedPackages = packagesRepository.saveAll(packagesToAssign);
+        userPackage.setCourseIds(userCourseIds);
+        userPackageRepository.save(userPackage);
 
-        // 유저 정보 저장
-        userRepository.save(loggedInUser);
+        // DriveCourse 생성 및 운전자 배정
+        assignDriversToDriveCourses(userPackage);
 
-        // 응답 DTO로 변환
-        return savedPackages.stream()
-                .map(this::convertToResponse)
-                .collect(Collectors.toList());
+        return List.of(convertToResponse(userPackage));
     }
 
     @Transactional
     public PackageResponse assignDriverByLocal(CustomPackageRequest pkgRequest) {
-
         User loggedInUser = getCurrentUser();
 
-        // 커스텀 패키지 생성
-        Packages customPackage = Packages.builder()
-                .name("name")
-                .description("")
-                .isCustomized(false)
-                .isCustomized(true)
-                .startDate(pkgRequest.getStartDate().atStartOfDay())
-                .endDate(pkgRequest.getEndDate().atStartOfDay())
-                .build();
+        // Custom PackageDetails 생성
+        PackageDetails customPackageDetails = new PackageDetails();
+        customPackageDetails.setPackageId("Custom" + UUID.randomUUID());
+        customPackageDetails.setName("Custom Package");
+        customPackageDetails.setDescription("Customized Package");
+        customPackageDetails.setStartDate(pkgRequest.getSelectedDates().get(0));
+        customPackageDetails.setEndDate(pkgRequest.getSelectedDates().get(pkgRequest.getSelectedDates().size() - 1));
+        packageDetailsRepository.save(customPackageDetails);
 
-        // 이용 가능한 운전자 조회
-        List<Driver> availableDrivers = driverRepository.findAvailableDriversByLocal(Collections.singletonList(pkgRequest.getRegion()), pkgRequest.getStartDate(), pkgRequest.getEndDate());
-        availableDrivers.forEach(driver -> System.out.println("Available drivers: " + driver.getName()));
+        // UserPackage 생성 및 저장
+        UserPackage userPackage = new UserPackage();
+        userPackage.setUser(loggedInUser);
+        userPackage.setPackageDetailsId(customPackageDetails.getId());
+        userPackage.setStartDate(pkgRequest.getSelectedDates().get(0).atStartOfDay());
+        userPackage.setEndDate(pkgRequest.getSelectedDates().get(pkgRequest.getSelectedDates().size() - 1).atTime(23, 59));
 
-        if (availableDrivers.isEmpty()) {
-            log.warn("패키지 '{}'에 할당 가능한 운전자가 없습니다.", customPackage.getName());
-            throw new NoAvailableDriverException("패키지 '" + customPackage.getName() + "'에 할당 가능한 운전자가 없습니다.");
+        List<Long> userCourseIds = new ArrayList<>();
+        for (int i = 0; i < pkgRequest.getSelectedDates().size(); i++) {
+            LocalDate date = pkgRequest.getSelectedDates().get(i);
+
+            BaseCourse baseCourse = new BaseCourse();
+            baseCourse.setDay(i + 1);
+            baseCourse.setRegion(pkgRequest.getRegion());
+            baseCourse.setPlace("Custom Place " + (i + 1));
+            baseCourse.setStartTime(LocalTime.of(9, 0));
+            baseCourse.setEndTime(LocalTime.of(17, 0));
+            baseCourseRepository.save(baseCourse);
+
+            UserCourse userCourse = UserCourse.builder()
+                    .date(date)
+                    .userPackageId(userPackage.getId())
+                    .build();
+
+            userCourse.setBaseCourse(baseCourse);
+
+            setStartDateTime(userCourse, date);
+            setEndDateTime(userCourse, date);
+            userCourseRepository.save(userCourse); // 저장
+            userCourseIds.add(userCourse.getId());
         }
 
-        log.debug("Available drivers for package '{}': {}", customPackage.getName(), availableDrivers);
+        userPackage.setCourseIds(userCourseIds);
+        userPackageRepository.save(userPackage);
 
-        // 운전자가 한 명 이상일 경우, 랜덤으로 선택
-        Driver selectedDriver = availableDrivers.get(new Random().nextInt(availableDrivers.size()));
-        // pkg.setDriver(selectedDriver);
-        log.info("패키지 '{}'에 운전자 '{}'를 할당했습니다.", customPackage.getName(), selectedDriver.getName());
-        System.out.println("운전자" + selectedDriver + "를 할당했습니다.");
+        assignDriversToDriveCourses(userPackage);
 
-        selectedDriver.addPackage(customPackage);
-        // driverRepository.save(selectedDriver);
-
-        // 패키지 저장
-        packagesRepository.save(customPackage);
-
-        loggedInUser.addPackage(customPackage);
-        loggedInUser.addDriver(selectedDriver);
-
-        userRepository.save(loggedInUser);
-
-        // 응답 DTO로 변환
-        return convertToResponse(customPackage);
+        return convertToResponse(userPackage);
     }
 
-    private Packages convertToEntity(PackageRequest request) {
-        Packages pkg = packagesRepository.findById(request.getId()).orElse(null);
+    @Transactional
+    public void assignDriversToDriveCourses(UserPackage userPackage) {
+        List<Long> userCourseIds = userPackage.getCourseIds();
+        List<UserCourse> userCourses = userCourseIds.stream()
+                .map(this::findUserCourseById)
+                .sorted(Comparator.comparing(this::getCourseStartDateTime))
+                .toList();
 
-        List<Course> courses = pkg.getCourses().stream()
-                .map(courseReq -> Course.builder()
-                        .region(courseReq.getRegion())
-                        .place(courseReq.getPlace())
-                        .description(courseReq.getDescription())
-                        .image(courseReq.getImage())
-                        .start(courseReq.getStart())
-                        .end(courseReq.getEnd())
-                        .build())
-                .collect(Collectors.toList());
+        List<Long> driveCourseIds = new ArrayList<>();
 
-        List<goormton.backend.somgil.domain.course.domain.Tag> tags = pkg.getTags().stream()
-                .map(tagName -> {
-                    goormton.backend.somgil.domain.course.domain.Tag tag = new Tag();
-                    tag.setName(tagName.getName());
-                    return tag;
+        for (int i = 0; i < userCourses.size() - 1; i++) {
+            UserCourse currentCourse = userCourses.get(i);
+            UserCourse nextCourse = userCourses.get(i + 1);
+
+            LocalDateTime driveStart = getCourseStartDateTime(currentCourse);
+            LocalDateTime driveEnd = getCourseEndDateTime(nextCourse);
+
+            if (driveStart.isBefore(driveEnd)) {
+                String region = findBaseCourseById(currentCourse.getBaseCourse().getId()).getRegion();
+                List<Driver> availableDrivers = driverRepository.findAvailableDrivers(region, driveStart, driveEnd);
+
+                if (availableDrivers.isEmpty()) {
+                    throw new NoAvailableDriverException("운전 가능한 드라이버가 없습니다.");
+                }
+
+                Driver selectedDriver = availableDrivers.get(new Random().nextInt(availableDrivers.size()));
+
+                DriveCourse driveCourse = new DriveCourse();
+                driveCourse.setDriverId(selectedDriver.getId());
+                driveCourse.setUserPackageId(userPackage.getId());
+                driveCourse.setStartTime(driveStart);
+                driveCourse.setEndTime(driveEnd);
+                driveCourseRepository.save(driveCourse);
+
+                driveCourseIds.add(driveCourse.getId());
+            }
+        }
+
+        userPackage.setDriveCourseIds(driveCourseIds);
+        userPackageRepository.save(userPackage);
+    }
+
+    private UserCourse findUserCourseById(Long id) {
+        return userCourseRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("UserCourse를 찾을 수 없습니다: ID=" + id));
+    }
+
+    private BaseCourse findBaseCourseById(Long id) {
+        return baseCourseRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("BaseCourse를 찾을 수 없습니다: ID=" + id));
+    }
+
+    private PackageResponse convertToResponse(UserPackage userPackage) {
+        // BaseCourse Responses
+        List<BaseCourseResponse> courseResponses = userPackage.getCourseIds().stream()
+                .map(this::findUserCourseById)
+                .map(userCourse -> {
+                    BaseCourse baseCourse = findBaseCourseById(userCourse.getBaseCourse().getId());
+                    return BaseCourseResponse.builder()
+                            .region(baseCourse.getRegion())
+                            .place(baseCourse.getPlace())
+                            .description(baseCourse.getDescription())
+                            .image(baseCourse.getImage())
+                            .startTime(baseCourse.getStartTime())
+                            .endTime(baseCourse.getEndTime())
+                            .build();
                 })
                 .collect(Collectors.toList());
 
-        return Packages.builder()
-                .name(pkg.getName())
-                .description(pkg.getDescription())
-                .isRecommended(pkg.isRecommended())
-                .courses(courses)
-                .tags(tags)
+        // DriveCourse Responses
+        List<DriveCourseResponse> driveCourseResponses = userPackage.getDriveCourseIds().stream()
+                .map(driveCourseRepository::findById)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(driveCourse -> {
+                    Driver driver = driverRepository.findById(driveCourse.getDriverId())
+                            .orElseThrow(() -> new IllegalArgumentException("Driver를 찾을 수 없습니다: ID=" + driveCourse.getDriverId()));
+                    return DriveCourseResponse.builder()
+                            .driverName(driver.getName())
+                            .startTime(driveCourse.getStartTime())
+                            .endTime(driveCourse.getEndTime())
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        // PackageDetails 정보
+        PackageDetails packageDetails = packageDetailsRepository.findById(userPackage.getPackageDetailsId())
+                .orElseThrow(() -> new IllegalArgumentException("PackageDetails를 찾을 수 없습니다: ID=" + userPackage.getPackageDetailsId()));
+
+        return PackageResponse.builder()
+                .name(packageDetails.getName())
+                .description(packageDetails.getDescription())
+                .isRecommended(packageDetails.isRecommended())
+                .courses(courseResponses)
+                .driveCourseResponses(driveCourseResponses)
+                .tags(packageDetails.getTagIds().stream()
+                        .map(this::findTagById) // ID로 Tag 조회
+                        .filter(Objects::nonNull) // 존재하지 않을 경우 필터링
+                        .map(Tag::getName)
+                        .collect(Collectors.toList()))
                 .build();
     }
 
-    private PackageResponse convertToResponse(Packages pkg) {
-        return PackageResponse.builder()
-                .name(pkg.getName())
-                .description(pkg.getDescription())
-                .isRecommended(pkg.isRecommended())
-                .courses(pkg.getCourses().stream().map(course -> CourseResponse.builder()
-                        .region(course.getRegion())
-                        .place(course.getPlace())
-                        .description(course.getDescription())
-                        .image(course.getImage())
-                        .start(course.getStart())
-                        .end(course.getEnd())
-                        .build()).collect(Collectors.toList()))
-                .tags(pkg.getTags().stream().map(goormton.backend.somgil.domain.course.domain.Tag::getName).collect(Collectors.toList()))
-                .driver(pkg.getDriver() != null ? DriverResponse.builder()
-                        .driverId(pkg.getDriver().getDriverId())
-                        .name(pkg.getDriver().getName())
-                        .contact(pkg.getDriver().getContact())
-                        .build() : null)
-                .build();
+    private Tag findTagById(Long id) {
+        // ID 기반으로 Tag를 조회
+        return tagRepository.findById(id).orElse(null);
     }
 
     private User getCurrentUser() {
@@ -201,6 +265,29 @@ public class DriverService {
             throw new IllegalStateException("현재 인증된 사용자가 없습니다.");
         }
 
-        return  (User) authentication.getPrincipal();
+        User currentUser = (User) authentication.getPrincipal();
+        // Ensure the user exists in the database
+        return userRepository.findById(currentUser.getId())
+                .orElseThrow(() -> new IllegalStateException("사용자를 찾을 수 없습니다."));
+    }
+
+    public void setStartDateTime(UserCourse userCourse, LocalDate date) {
+        BaseCourse baseCourse = findBaseCourseById(userCourse.getBaseCourse().getId());
+        userCourse.setStartDate(date.atTime(baseCourse.getStartTime()));
+    }
+
+    public void setEndDateTime(UserCourse userCourse, LocalDate date) {
+        BaseCourse baseCourse = findBaseCourseById(userCourse.getBaseCourse().getId());
+        userCourse.setEndDate(date.atTime(baseCourse.getEndTime()));
+    }
+
+    public LocalDateTime getCourseStartDateTime(UserCourse userCourse) {
+        BaseCourse baseCourse = findBaseCourseById(userCourse.getBaseCourse().getId());
+        return userCourse.getDate().atTime(baseCourse.getStartTime());
+    }
+
+    public LocalDateTime getCourseEndDateTime(UserCourse userCourse) {
+        BaseCourse baseCourse = findBaseCourseById(userCourse.getBaseCourse().getId());
+        return userCourse.getDate().atTime(baseCourse.getEndTime());
     }
 }
