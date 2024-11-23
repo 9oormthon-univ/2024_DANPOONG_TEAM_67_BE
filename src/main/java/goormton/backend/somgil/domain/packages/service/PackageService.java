@@ -7,7 +7,7 @@ import goormton.backend.somgil.domain.course.domain.repository.TagRepository;
 import goormton.backend.somgil.domain.course.dto.BaseCourseResponse;
 import goormton.backend.somgil.domain.packages.domain.PackageDetails;
 import goormton.backend.somgil.domain.packages.domain.repository.PackageDetailsRepository;
-import goormton.backend.somgil.domain.packages.dto.response.PackageResponse;
+import goormton.backend.somgil.domain.packages.dto.response.PackageListResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,12 +23,12 @@ public class PackageService {
     private final BaseCourseRepository baseCourseRepository;
     private final TagRepository tagRepository;
 
-    public List<PackageResponse> getAllPackages() {
+    public List<PackageListResponse> getAllPackages() {
         // `isCustomized`가 `false`인 패키지만 조회
         List<PackageDetails> packagesDetails = packageDetailsRepository.findByIsCustomizedFalse();
 
         return packagesDetails.stream()
-                .map(pkg -> PackageResponse.builder()
+                .map(pkg -> PackageListResponse.builder()
                         .packageId(pkg.getPackageId())
                         .name(pkg.getName())
                         .description(pkg.getDescription())
@@ -48,11 +48,11 @@ public class PackageService {
                 .collect(Collectors.toList());
     }
 
-    public List<PackageResponse> getRecommendedPackages() {
+    public List<PackageListResponse> getRecommendedPackages() {
         List<PackageDetails> recommendedPackages = packageDetailsRepository.findByIsRecommendedTrue();
 
         return recommendedPackages.stream()
-                .map(pkg -> PackageResponse.builder()
+                .map(pkg -> PackageListResponse.builder()
                         .packageId(pkg.getPackageId())
                         .name(pkg.getName())
                         .description(pkg.getDescription())
