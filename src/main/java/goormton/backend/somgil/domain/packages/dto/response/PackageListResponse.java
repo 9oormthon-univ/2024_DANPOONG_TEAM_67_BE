@@ -13,7 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class PackageResponse {
+public class PackageListResponse {
 
     private Long id;
     private String packageId;
@@ -25,10 +25,9 @@ public class PackageResponse {
     private LocalTime endTime;
     private List<BaseCourseResponse> courses;
     private List<String> tags;
-    private List<DriveCourseResponse> driveCourseResponses;
 
     @Builder
-    public PackageResponse(Long id, String packageId, String name, String description, boolean isRecommended, LocalTime startTime, LocalTime endTime, List<BaseCourseResponse> courses, List<String> tags, List<DriveCourseResponse> driveCourseResponses) {
+    public PackageListResponse(Long id, String packageId, String name, String description, boolean isRecommended, LocalTime startTime, LocalTime endTime, List<BaseCourseResponse> courses, List<String> tags) {
         this.id = id;
         this.packageId = packageId;
         this.name = name;
@@ -38,6 +37,5 @@ public class PackageResponse {
         this.endTime = endTime;
         this.courses = courses;
         this.tags = tags;
-        this.driveCourseResponses = driveCourseResponses;
     }
 }
