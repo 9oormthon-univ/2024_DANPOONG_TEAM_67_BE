@@ -14,6 +14,8 @@ public class PackagesResponse {
     private String name;
     private String description;
 
+    private String type;
+
     private String packageId;
 
     private double reviewRating;
