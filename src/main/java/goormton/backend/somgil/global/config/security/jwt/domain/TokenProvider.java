@@ -77,7 +77,7 @@ public class TokenProvider {
     }
 
     public String resolveToken(HttpServletRequest request){
-        return request.getHeader("Bearer");
+        return request.getHeader("token");
     }
 
     public boolean validateToken(String token){
