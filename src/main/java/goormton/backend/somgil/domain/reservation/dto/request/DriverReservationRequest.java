@@ -15,6 +15,10 @@ public class DriverReservationRequest {
     private String pickupLocation;
     private String dropOffLocation;
 
+    private int adultCount;
+    private int childCount;
+    private int infantCount;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private String date;
     private String time;
