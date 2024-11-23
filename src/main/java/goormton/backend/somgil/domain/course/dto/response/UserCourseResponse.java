@@ -1,4 +1,4 @@
-package goormton.backend.somgil.domain.course.dto;
+package goormton.backend.somgil.domain.course.dto.response;
 
 import goormton.backend.somgil.domain.driver.dto.response.DriverResponse;
 import lombok.*;

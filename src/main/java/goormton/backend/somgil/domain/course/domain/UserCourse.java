@@ -43,9 +43,10 @@
 //        private Long driverId; // Driver ID 참조 (운전자 배정 시)
 
         @Builder
-        public UserCourse(LocalDate date, Long userPackageId) {
+        public UserCourse(LocalDate date, Long userPackageId, BaseCourse baseCourse) {
             this.date = date;
             this.userPackageId = userPackageId;
+            this.baseCourse = baseCourse;
         }
 
     }
