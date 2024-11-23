@@ -31,6 +31,8 @@ public class PackageDetails {
     private LocalDate startDate;
     private LocalDate endDate;
 
+    private int price;
+
     @ElementCollection
     private List<Long> courseIds = new ArrayList<>(); // BaseCourse의 ID 목록 저장
 

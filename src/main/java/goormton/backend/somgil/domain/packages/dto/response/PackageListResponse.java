@@ -1,6 +1,6 @@
 package goormton.backend.somgil.domain.packages.dto.response;
 
-import goormton.backend.somgil.domain.course.dto.BaseCourseResponse;
+import goormton.backend.somgil.domain.course.dto.response.BaseCourseResponse;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,6 +20,7 @@ public class PackageListResponse {
     private String description;
     private boolean isRecommended;
     private boolean isCustomized;
+    private int price;
 //    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss", timezone = "Asia/Seoul")
     private LocalTime startTime;
 //    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss", timezone = "Asia/Seoul")
@@ -28,12 +29,13 @@ public class PackageListResponse {
     private List<String> tags;
 
     @Builder
-    public PackageListResponse(Long id, String packageId, String name, String description, boolean isRecommended, LocalTime startTime, LocalTime endTime, List<BaseCourseResponse> courses, List<String> tags) {
+    public PackageListResponse(Long id, String packageId, String name, String description, int price, boolean isRecommended, LocalTime startTime, LocalTime endTime, List<BaseCourseResponse> courses, List<String> tags) {
         this.id = id;
         this.packageId = packageId;
         this.name = name;
         this.description = description;
         this.isRecommended = isRecommended;
+        this.price = price;
         this.startTime = startTime;
         this.endTime = endTime;
         if (courses != null) {
