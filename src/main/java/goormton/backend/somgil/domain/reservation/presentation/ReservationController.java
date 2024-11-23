@@ -5,6 +5,7 @@ import goormton.backend.somgil.domain.reservation.dto.request.ReservationRequest
 import goormton.backend.somgil.domain.reservation.dto.response.DriverReservationResponse;
 import goormton.backend.somgil.domain.reservation.dto.response.ReservationResponse;
 import goormton.backend.somgil.domain.reservation.service.ReservationService;
+import goormton.backend.somgil.domain.user.domain.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -13,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,8 +32,8 @@ public class ReservationController {
             @ApiResponse(responseCode = "400", description = "불러오기 실패", content = {@Content(mediaType = "application/json")}),
     })
     @PostMapping("/approval")
-    public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationRequest request) {
-        ReservationResponse response = reservationService.createReservation(request);
+    public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationRequest request, @AuthenticationPrincipal User user ) {
+        ReservationResponse response = reservationService.createReservation(request,user);
         return ResponseEntity.ok(response);
     }
 

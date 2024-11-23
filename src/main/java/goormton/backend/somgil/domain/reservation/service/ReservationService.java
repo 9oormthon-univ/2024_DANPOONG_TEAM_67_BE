@@ -31,8 +31,8 @@ public class ReservationService {
     private final PackagesRepository packagesRepository;
 
     @Transactional
-    public ReservationResponse createReservation(ReservationRequest request) {
-        User loggedUser = getCurrentUser();
+    public ReservationResponse createReservation(ReservationRequest request, User loggedUser) {
+        //User loggedUser = getCurrentUser();
 
         // 패키지 조회
         Packages packages = packagesRepository.findByPackageId(request.getPackageId())
