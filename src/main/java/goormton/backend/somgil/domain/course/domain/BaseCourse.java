@@ -1,14 +1,12 @@
 package goormton.backend.somgil.domain.course.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import goormton.backend.somgil.domain.driver.domain.Driver;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +29,9 @@ public class BaseCourse {
 
     private LocalTime startTime; // 코스 시작 시분초만 저장
     private LocalTime endTime;   // 코스 종료 시분초만 저장
+
+    @ElementCollection
+    private List<String> packageIds = new ArrayList<>(); // 연결된 packageId 목록
 
     @OneToMany(mappedBy = "baseCourse", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore // 무한 루프 방지

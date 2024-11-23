@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -21,11 +22,13 @@ public class PackageDetailResponse {
     private String description;
     private boolean isRecommended;
     private boolean isCustomized;
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss", timezone = "Asia/Seoul")
     private LocalTime startTime;
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss", timezone = "Asia/Seoul")
     private LocalTime endTime;
-    private List<BaseCourseResponse> courses;
-    private List<String> tags;
-    private List<DriveCourseResponse> driveCourseResponses;
+    private List<BaseCourseResponse> courses = new ArrayList<>();
+    private List<String> tags = new ArrayList<>();
+    private List<DriveCourseResponse> driveCourseResponses = new ArrayList<>();
 
     @Builder
     public PackageDetailResponse(Long id, String packageId, String name, String description, boolean isRecommended, LocalTime startTime, LocalTime endTime, List<BaseCourseResponse> courses, List<String> tags, List<DriveCourseResponse> driveCourseResponses) {
@@ -36,8 +39,14 @@ public class PackageDetailResponse {
         this.isRecommended = isRecommended;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.courses = courses;
-        this.tags = tags;
-        this.driveCourseResponses = driveCourseResponses;
+        if (courses != null) {
+            this.courses.addAll(courses);
+        }
+        if (tags != null) {
+            this.tags.addAll(tags);
+        }
+        if (driveCourseResponses != null) {
+            this.driveCourseResponses.addAll(driveCourseResponses);
+        }
     }
 }

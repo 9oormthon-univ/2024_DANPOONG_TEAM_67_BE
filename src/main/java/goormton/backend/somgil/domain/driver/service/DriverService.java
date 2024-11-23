@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -58,24 +59,28 @@ public class DriverService {
         UserPackage userPackage = new UserPackage();
         userPackage.setUser(loggedInUser);
 
+        // PackageDetails 조회
         PackageDetails packageDetails = packageDetailsRepository.findByPackageId(packageRequest.getPackageId())
-                .orElseThrow(() -> new IllegalArgumentException("패키지를 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("패키지를 찾을 수 없습니다: packageId=" + packageRequest.getPackageId()));
         userPackage.setPackageDetailsId(packageDetails.getId());
 
-        userPackage.setStartDate(packageRequest.getSelectedDates().get(0).atStartOfDay());
-        userPackage.setEndDate(packageRequest.getSelectedDates().get(packageRequest.getSelectedDates().size() - 1).atTime(23, 59));
-
+        userPackage.setStartDate(packageRequest.getStartDate().atStartOfDay());
+        userPackage.setEndDate(packageRequest.getEndDate().atTime(23, 59, 59));
         userPackageRepository.save(userPackage);
+
+        // packageId로 BaseCourse 조회
+        List<BaseCourse> baseCourses = baseCourseRepository.findByPackageId(packageRequest.getPackageId());
+        if (baseCourses.isEmpty()) {
+            throw new IllegalArgumentException("해당 패키지에 코스가 존재하지 않습니다: packageId=" + packageRequest.getPackageId());
+        }
 
         // UserCourse 생성 및 저장
         List<Long> userCourseIds = new ArrayList<>();
-        LocalDate startDate = packageRequest.getSelectedDates().get(0);
-
-        List<BaseCourse> baseCourses = baseCourseRepository.findAllById(packageDetails.getCourseIds());
-
+        LocalDate startDate = packageRequest.getStartDate();
 
         for (BaseCourse course : baseCourses) {
             LocalDate courseDate = startDate.plusDays(course.getDay() - 1);
+
             UserCourse userCourse = UserCourse.builder()
                     .date(courseDate)
                     .userPackageId(userPackage.getId())
@@ -107,20 +112,25 @@ public class DriverService {
         customPackageDetails.setPackageId("Custom" + UUID.randomUUID());
         customPackageDetails.setName("Custom Package");
         customPackageDetails.setDescription("Customized Package");
-        customPackageDetails.setStartDate(pkgRequest.getSelectedDates().get(0));
-        customPackageDetails.setEndDate(pkgRequest.getSelectedDates().get(pkgRequest.getSelectedDates().size() - 1));
+        customPackageDetails.setStartDate(pkgRequest.getStartDate());
+        customPackageDetails.setEndDate(pkgRequest.getEndDate());
         packageDetailsRepository.save(customPackageDetails);
 
         // UserPackage 생성 및 저장
         UserPackage userPackage = new UserPackage();
         userPackage.setUser(loggedInUser);
         userPackage.setPackageDetailsId(customPackageDetails.getId());
-        userPackage.setStartDate(pkgRequest.getSelectedDates().get(0).atStartOfDay());
-        userPackage.setEndDate(pkgRequest.getSelectedDates().get(pkgRequest.getSelectedDates().size() - 1).atTime(23, 59));
+        userPackage.setStartDate(pkgRequest.getStartDate().atStartOfDay());
+        userPackage.setEndDate(pkgRequest.getEndDate().atTime(23, 59, 59));
+
+        LocalDate startDate = pkgRequest.getStartDate();
+        LocalDate endDate = pkgRequest.getEndDate(); // 끝나는 날짜를 가져오는 메서드가 필요
+
+        long daysBetween = ChronoUnit.DAYS.between(startDate, endDate);
 
         List<Long> userCourseIds = new ArrayList<>();
-        for (int i = 0; i < pkgRequest.getSelectedDates().size(); i++) {
-            LocalDate date = pkgRequest.getSelectedDates().get(i);
+        for (int i = 0; i <= daysBetween; i++) {
+            LocalDate date = startDate.plusDays(i);
 
             BaseCourse baseCourse = new BaseCourse();
             baseCourse.setDay(i + 1);
@@ -150,6 +160,25 @@ public class DriverService {
 
         return convertToResponse(userPackage);
     }
+
+//    @Transactional
+//    public List<BaseCourseResponse> getCoursesByPackageId(String packageId) {
+//        // packageId로 BaseCourse 조회
+//        List<BaseCourse> baseCourses = baseCourseRepository.findByPackageId(packageId);
+//
+//        // BaseCourse를 BaseCourseResponse로 변환
+//        return baseCourses.stream()
+//                .map(course -> BaseCourseResponse.builder()
+//                        .region(course.getRegion())
+//                        .place(course.getPlace())
+//                        .description(course.getDescription())
+//                        .image(course.getImage())
+//                        .startTime(course.getStartTime())
+//                        .endTime(course.getEndTime())
+//                        .build())
+//                .collect(Collectors.toList());
+//    }
+
 
     @Transactional
     public void assignDriversToDriveCourses(UserPackage userPackage) {
