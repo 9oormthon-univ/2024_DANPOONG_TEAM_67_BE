@@ -1,22 +1,7 @@
 package goormton.backend.somgil.domain.driver.service;
 
-import goormton.backend.somgil.domain.course.domain.BaseCourse;
-import goormton.backend.somgil.domain.course.domain.DriveCourse;
-import goormton.backend.somgil.domain.course.domain.Tag;
-import goormton.backend.somgil.domain.course.domain.UserCourse;
-import goormton.backend.somgil.domain.course.domain.repository.BaseCourseRepository;
-import goormton.backend.somgil.domain.course.domain.repository.DriveCourseRepository;
-import goormton.backend.somgil.domain.course.domain.repository.TagRepository;
-import goormton.backend.somgil.domain.course.domain.repository.UserCourseRepository;
-import goormton.backend.somgil.domain.course.dto.response.BaseCourseResponse;
-import goormton.backend.somgil.domain.course.dto.response.DriveCourseResponse;
-import goormton.backend.somgil.domain.driver.domain.Driver;
 import goormton.backend.somgil.domain.driver.domain.repository.DriverRepository;
 import goormton.backend.somgil.domain.driver.exception.NoAvailableDriverException;
-import goormton.backend.somgil.domain.packages.domain.PackageDetails;
-import goormton.backend.somgil.domain.packages.domain.UserPackage;
-import goormton.backend.somgil.domain.packages.domain.repository.PackageDetailsRepository;
-import goormton.backend.somgil.domain.packages.domain.repository.UserPackageRepository;
 import goormton.backend.somgil.domain.packages.dto.request.CustomPackageRequest;
 import goormton.backend.somgil.domain.packages.dto.request.PackageRequest;
 import goormton.backend.somgil.domain.packages.dto.response.PackageDetailResponse;

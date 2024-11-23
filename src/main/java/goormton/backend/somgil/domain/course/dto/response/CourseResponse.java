@@ -1,15 +1,13 @@
-package goormton.backend.somgil.domain.course.dto.request;
+package goormton.backend.somgil.domain.course.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CourseRequest {
-
-
+public class CourseResponse {
+    private int day;
+    private String content;
 }

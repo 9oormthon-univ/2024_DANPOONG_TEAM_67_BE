@@ -3,7 +3,6 @@
     import com.querydsl.jpa.impl.JPAQueryFactory;
     import goormton.backend.somgil.domain.course.domain.QBaseCourse;
     import goormton.backend.somgil.domain.course.domain.QUserCourse;
-    import goormton.backend.somgil.domain.driver.domain.Driver;
     import goormton.backend.somgil.domain.driver.domain.QDriver;
     import lombok.RequiredArgsConstructor;
 

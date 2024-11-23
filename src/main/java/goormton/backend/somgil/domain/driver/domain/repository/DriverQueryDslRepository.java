@@ -1,7 +1,5 @@
 package goormton.backend.somgil.domain.driver.domain.repository;
 
-import goormton.backend.somgil.domain.driver.domain.Driver;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;

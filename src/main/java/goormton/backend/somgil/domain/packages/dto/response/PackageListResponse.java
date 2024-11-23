@@ -1,6 +1,5 @@
 package goormton.backend.somgil.domain.packages.dto.response;
 
-import goormton.backend.somgil.domain.course.dto.response.BaseCourseResponse;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

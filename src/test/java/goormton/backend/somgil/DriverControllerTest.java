@@ -1,12 +1,7 @@
 package goormton.backend.somgil;
 
-import goormton.backend.somgil.domain.course.domain.BaseCourse;
-import goormton.backend.somgil.domain.course.domain.repository.BaseCourseRepository;
-import goormton.backend.somgil.domain.driver.domain.Driver;
 import goormton.backend.somgil.domain.driver.domain.repository.DriverRepository;
 import goormton.backend.somgil.domain.driver.service.DriverService;
-import goormton.backend.somgil.domain.packages.domain.PackageDetails;
-import goormton.backend.somgil.domain.packages.domain.repository.PackageDetailsRepository;
 import goormton.backend.somgil.domain.packages.dto.request.CustomPackageRequest;
 import goormton.backend.somgil.domain.packages.dto.request.PackageRequest;
 import goormton.backend.somgil.domain.packages.dto.response.PackageResponse;
@@ -23,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
